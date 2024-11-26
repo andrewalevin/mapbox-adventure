@@ -40,13 +40,14 @@ function mapProcess(data) {
     console.log('💙 mapProcess: ', data)
 
     const radius = getRadius(map.getZoom());
-    for (const rawitem of data) {
+    for (const data_item of data) {
+        const { coords = '', title = '', about = '', img = '' } = data_item;
         const item = {
-            'coordinates': rawitem[0],
-            'title': rawitem[1],
-            'description': rawitem[2],
-            'thumbnail': rawitem[3],
-        }
+            coordinates: coords,
+            title: title,
+            description: about,
+            thumbnail: img,
+        };
 
         const elem = document.createElement('div');
         elem.className = 'marker marker-interest';
@@ -58,10 +59,11 @@ function mapProcess(data) {
         if (item.thumbnail){
             const parts = item.thumbnail.split('.')
             const filename = `imgs/${parts[0]}-100px.${parts[1]}`;
-            elem.style.backgroundImage = `url(\'${filename }\')`;
+            //elem.style.backgroundImage = `url('${config.root_url_debug}''${filename }\')`;
+            elem.style.backgroundImage = `url('${config.root_url_debug}${filename}\')`;
 
             const img_url = `imgs/${parts[0]}-220px.${parts[1]}`;
-            img_content = `<img loading="lazy" src="${img_url}"/>`;
+            img_content = `<img loading="lazy" src="${config.root_url_debug}${img_url}" alt=""/>`;
         }
 
 
