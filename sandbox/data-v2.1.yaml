@@ -20,8 +20,10 @@
   about: Галерея искусства стран Европы и Америки XIX – XX веков
   img: gmii-galery.png
   link: https://yandex.ru/maps/-/CDxtqROY
+
 - coords: 55.747224, 37.605240
   title: ГМИИ
+
 - coords: 55.738737, 37.596090
   title: |
     <h1>Музей И.С. Тургенева</h1>
@@ -33,12 +35,15 @@
   img: turgenev.png
   link: |
     <a href="https://yandex.ru/maps/-/CDxtqZ2U" style="color: green;">Музей Тургенева на Яндекс Картах</a>
+
 - title: Перезвон кафе
   about: Перезвон кафе
   img: perezvon.png
+
 - title: Cобор Петра и Павла
   about: Cобор Петра и Павла
   img: petra-pavla-cathidral.png
+
 - coords: 55.735631, 37.624037
   title: Нитка чайная
   about: Нитка чайная

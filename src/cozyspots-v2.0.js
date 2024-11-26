@@ -59,8 +59,6 @@ function parseCoordinates(input, defaultCoords = [0, 0], offsetMultiplier = 0.00
 
     const getRandomOffset = () => (Math.random() * 2 - 1) * offsetMultiplier;
 
-    defaultCoords = defaultCoords.reverse();
-
     return [
         defaultCoords[0] + getRandomOffset(),
         defaultCoords[1] + getRandomOffset(),
@@ -161,7 +159,7 @@ function mapProcess(data) {
 
         new mapboxgl.Marker(marker_elem)
             .setLngLat(
-                parseCoordinates(item.coordinates, config.map.center, 0.0001).reverse())
+                parseCoordinates(item.coordinates, config.map.center.reverse(), 0.00001).reverse())
             .setPopup(
                 new mapboxgl.Popup({
                     offset: 50
