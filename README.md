@@ -2,4 +2,6 @@
 Mapbox Adventure lets you to design your own maps
 
 
-Usage
+https://andrewalevin.github.io/mapbox-adventure/
+
+
