@@ -55,7 +55,11 @@ function parseCoordinates(input, defaultCoords = [0, 0], offsetMultiplier = 0.00
         return [lat, lon];
     }
 
+    console.log('☢️ No coordinates found');
+
     const getRandomOffset = () => (Math.random() * 2 - 1) * offsetMultiplier;
+
+    defaultCoords = defaultCoords.reverse();
 
     return [
         defaultCoords[0] + getRandomOffset(),
@@ -89,7 +93,7 @@ function mapProcess(data) {
         if (item.title) {
             const title_elem = document.createElement('div');
             title_elem.className = 'popup-title';
-            if (isHTML(item.link)) {
+            if (isHTML(item.title)) {
                 title_elem.innerHTML = item.title;
             }else {
                 title_elem.appendChild(
