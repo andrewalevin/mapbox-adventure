@@ -1,0 +1,164 @@
+- coords: 55.728324, 37.555595
+  title: Дорогу утятам!
+  about: Дорогу утятам! D
+  img: utki.png
+- coords: 55.742752, 37.612733
+  title: ГЭС-2
+  about: ГЭС-2 - D
+  img: ges2.png
+- coords: 55.763080, 37.607053
+  title: Фаланстер
+  about: Фаланстер - D
+  img: falanster.png
+- coords: 55.743758, 37.597320
+  title: Музей А. С. Пушкина
+  about: Музей А. С. Пушкина
+  img: pushkin.png
+- coords: 55.746589, 37.605129
+  title: Галерея искусства стран Европы и Америки XIX – XX веков
+  about: Галерея искусства стран Европы и Америки XIX – XX веков
+  img: gmii-galery.png
+- coords: 55.738737, 37.596090
+  title: Музей И.С. Тургенева
+  about: Музей И.С. Тургенева
+  img: turgenev.png
+- coords: 55.777088, 37.613561
+  title: Музей истории ГУЛАГа
+  about: Музей истории ГУЛАГа
+  img: gulag.png
+- coords: 55.761195, 37.645196
+  title: Чистые пруды
+  about: Чистые пруды
+  img: chistu-prudy.png
+- coords: 55.770688, 37.609090
+  title: Сад Эрмитаж
+  about: Сад Эрмитаж
+  img: hermitage-grade.png
+- coords: 55.747224, 37.605240
+  title: ГМИИ
+  about: ГМИИ
+  img: gmii.png
+- coords: 55.743587, 37.574960
+  title: Ростовская набережная
+  about: Ростовская набережная
+  img: rostov-seafront.png
+- coords: 55.710781, 37.535096
+  title: Большой газон МГУ
+  about: Большой газон МГУ
+  img: big-gazon.png
+- coords: 55.717246, 37.587344
+  title: Нескучный сад
+  about: Нескучный сад
+  img: neskuchn-garden.png
+- coords: 55.761092, 37.578307
+  title: Московский зоопарк
+  about: Московский зоопарк
+  img: zoo.png
+- coords: 55.764952, 37.587947
+  title: Музей истории телефона
+  about: Музей истории телефона
+  img: phone-store.png
+- coords: 55.728432, 37.658835
+  title: Крутицкое патриаршее подворье
+  about: Крутицкое патриаршее подворье
+  img: krutitskoe.png
+- coords: 55.724326, 37.592946
+  title: Андреевский мост
+  about: Андреевский мост
+  img: andreevskiy-most.png
+- coords: 55.744816, 37.627167
+  title: Перезвон кафе
+  about: Перезвон кафе
+  img: perezvon.png
+- coords: 55.747765, 37.605615
+  title: Антипа кафе
+  about: Антипа кафе
+  img: antipa.png
+- coords: 55.749640, 37.592415
+  title: Дом А. Ф. Лосева
+  about: Дом А. Ф. Лосева
+  img: loseva.png
+- coords: 55.777600, 37.635061
+  title: Аптекарский огород
+  about: Аптекарский огород
+  img: aptek.png
+- coords: 55.789271, 37.607867
+  title: Еврейский музей
+  about: Еврейский музей
+  img: jevish.png
+- coords: 55.767041, 37.593958
+  title: Нехорошая квартира
+  about: Нехорошая квартира
+  img: bulgakov.png
+- coords: 55.663944, 37.668914
+  title: Храм Предтечи в Дьяково
+  about: Храм Предтечи в Дьяково
+  img: kolomenskoe-predtechi.png
+- coords: 55.667279, 37.670671
+  title: Церковь Вознесения
+  about: Церковь Вознесения
+  img: kolomenskoe.png
+- coords: 55.765014, 37.634202
+  title: Тургеневская читальня
+  about: Тургеневская читальня
+  img: turgenev-library.png
+- coords: 55.771975, 37.671940
+  title: Пушкинская читальня
+  about: Пушкинская читальня
+  img: pushkni-library.png
+- coords: 55.707710, 37.526830
+  title: Ботанический сад МГУ
+  about: Ботанический сад МГУ
+  img: botsad-msu.png
+- coords: 55.756441, 37.583335
+  title: Музей Шаляпина
+  about: Музей Шаляпина
+  img: shalyapin.png
+- coords: 55.756733, 37.640756
+  title: Cобор Петра и Павла
+  about: Cобор Петра и Павла
+  img: petra-pavla-cathidral.png
+- coords: 55.627942, 37.692404
+  title: Шипиловская плотина
+  about: Шипиловская плотина
+  img: shipilovskaya-damb.png
+- coords: 55.828930, 37.655585
+  title: Ростокинский акведук
+  about: Ростокинский акведук
+  img: rostokino.png
+- coords: 55.728306, 36.816050
+  title: Саввино-Сторожевский монастырь
+  about: Саввино-Сторожевский монастырь
+  img: savvino-storochevskiy.png
+- coords: 55.733105, 36.840294
+  title: Успенский собор в Городке
+  about: Успенский собор в Городке
+  img: uspensky-sobor.png
+- coords: 55.729897, 36.859526
+  title: Звенигородский манеж
+  about: Звенигородский манеж
+  img: zvenigorod-manesh.png
+- coords: 55.730249, 36.852574
+  title: Дом кофейня
+  about: Дом кофейня
+  img: zvenigorod-dom.png
+- coords: 55.700144, 36.723227
+  title: Биостанция МГУ
+  about: Биостанция МГУ
+  img: zvenigorod-biostation.png
+- coords: 55.681699, 36.717964
+  title: Болота карьера Сима
+  about: Болота карьера Сима
+  img: zvenigorod-sima.png
+- coords: 56.234583, 37.965156
+  title: Абрамтцево
+  about: Абрамтцево
+  img: abramtsevo.png
+- coords: 55.735631, 37.624037
+  title: Нитка чайная
+  about: Нитка чайная
+  img: nitka.png
+- coords: 55.737729, 37.298696
+  title: Парк Малевича
+  about: Парк Малевича
+  img: malevich.png
