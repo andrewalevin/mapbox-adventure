@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+
+    <title>🗺 SandBox</title>
+
+    <meta property="og:title" content="🗺 SandBox" />
+    <meta property="og:description" content="🗺 SandBox Description" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="/maps/sandbox/" />
+    <meta property="og:image" content="/maps/sandbox/preview.png" />
+
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+
+    <link href="../src/style.css" rel="stylesheet">
+
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.css" rel="stylesheet">
+
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.js"></script>
+
+    <link href="../src/cozyspots-v2.0.css" rel="stylesheet">
+
+    <style>
+
+    </style>
+</head>
+
+<body>
+<div id="map"></div>
+
+<script src="../src/cozyspots-config-default-v2.0.js"></script>
+
+<script>
+    config.map.center = [37.61, 55.75];
+    config.map.style = 'mapbox://styles/andrewlevin/clthwxvvg002h01qo40y1e99g';
+    config.map.zoom = 11;
+    config.data_path = 'data.yaml';
+
+</script>
+
+<script src="../assets/js-yaml.min.js"></script>
+
+<script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
+
+<script src="../src/cozyspots-v2.0.js"></script>
+
+
+</body>
+
+</html>
