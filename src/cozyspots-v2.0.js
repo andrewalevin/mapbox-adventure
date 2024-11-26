@@ -44,6 +44,8 @@ function isHTML(str) {
 function parseCoordinates(input, defaultCoords = [0, 0], offsetMultiplier = 0.001) {
     // Helper to generate random offset
 
+    console.log('🧮🧮 PARSER coords: ', input);
+
     // Regular expression to match valid coordinate formats
     const coordRegex = /^\s*(-?\d+(\.\d+)?)\s*[,\s]\s*(-?\d+(\.\d+)?)\s*$/;
 
@@ -57,12 +59,17 @@ function parseCoordinates(input, defaultCoords = [0, 0], offsetMultiplier = 0.00
 
     console.log('☢️ No coordinates found');
 
-    const getRandomOffset = () => (Math.random() * 2 - 1) * offsetMultiplier;
+    console.log(typeof defaultCoords[0]);
 
-    return [
-        defaultCoords[0] + getRandomOffset(),
-        defaultCoords[1] + getRandomOffset(),
-    ];
+    const getRandomOffset = () => (Math.random() * 2 - 1) * offsetMultiplier;
+    const randVal = getRandomOffset();
+    console.log('rand: ', randVal, typeof randVal);
+
+    const virtual_coords =  [defaultCoords[1] + randVal, defaultCoords[0] + randVal];
+    console.log('virtual_coords: ', virtual_coords);
+    console.log('');
+
+    return virtual_coords;
 }
 
 function mapProcess(data) {
@@ -157,9 +164,11 @@ function mapProcess(data) {
         }
 
 
+        const res_coords = parseCoordinates(item.coordinates, config.map.center, 0.0025).reverse();
+        console.log('📍res_coords: ', res_coords);
+
         new mapboxgl.Marker(marker_elem)
-            .setLngLat(
-                parseCoordinates(item.coordinates, config.map.center.reverse(), 0.00001).reverse())
+            .setLngLat(res_coords)
             .setPopup(
                 new mapboxgl.Popup({
                     offset: 50
