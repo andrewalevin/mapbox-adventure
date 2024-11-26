@@ -36,57 +36,128 @@ function getRadius(zoom) {
 }
 
 
+function isHTML(str) {
+    const doc = new DOMParser().parseFromString(str, "text/html");
+    return Array.from(doc.body.childNodes).some(node => node.nodeType === 1);
+}
+
+function parseCoordinates(input, defaultCoords = [0, 0], offsetMultiplier = 0.001) {
+    // Helper to generate random offset
+
+    // Regular expression to match valid coordinate formats
+    const coordRegex = /^\s*(-?\d+(\.\d+)?)\s*[,\s]\s*(-?\d+(\.\d+)?)\s*$/;
+
+    // Attempt to parse input
+    const match = input.match(coordRegex);
+    if (match) {
+        const lat = parseFloat(match[1]);
+        const lon = parseFloat(match[3]);
+        return [lat, lon];
+    }
+
+    const getRandomOffset = () => (Math.random() * 2 - 1) * offsetMultiplier;
+
+    return [
+        defaultCoords[0] + getRandomOffset(),
+        defaultCoords[1] + getRandomOffset(),
+    ];
+}
+
 function mapProcess(data) {
     console.log('💙 mapProcess: ', data)
 
     const radius = getRadius(map.getZoom());
     for (const data_item of data) {
-        const { coords = '', title = '', about = '', img = '' } = data_item;
+        const { coords = '', title = '', about = '', img = '', link = ''} = data_item;
         const item = {
             coordinates: coords,
             title: title,
-            description: about,
+            about: about,
             thumbnail: img,
         };
 
-        const elem = document.createElement('div');
-        elem.className = 'marker marker-interest';
-        elem.style.width = `${radius}px`;
-        elem.style.height = `${radius}px`;
 
+        const marker_elem = document.createElement('div');
+        marker_elem.className = 'marker marker-interest';
+        marker_elem.style.width = `${radius}px`;
+        marker_elem.style.height = `${radius}px`;
 
-        let img_content = '';
-        if (item.thumbnail){
-            const parts = item.thumbnail.split('.')
-            const filename = `imgs/${parts[0]}-100px.${parts[1]}`;
-            //elem.style.backgroundImage = `url('${config.root_url_debug}''${filename }\')`;
-            elem.style.backgroundImage = `url('${config.root_url_debug}${filename}\')`;
+        const popup_elem = document.createElement('div');
+        popup_elem.className = 'popup';
 
-            const img_url = `imgs/${parts[0]}-220px.${parts[1]}`;
-            img_content = `<img loading="lazy" src="${config.root_url_debug}${img_url}" alt=""/>`;
+        if (item.title) {
+            const title_elem = document.createElement('div');
+            title_elem.className = 'popup-title';
+            if (isHTML(item.link)) {
+                title_elem.innerHTML = item.title;
+            }else {
+                title_elem.appendChild(
+                    Object.assign(document.createElement('h3'), {textContent: item.title}));
+            }
+            popup_elem.appendChild(title_elem);
         }
 
 
-        const coordinates = item.coordinates.split(', ').reverse();
+        if (item.thumbnail) {
+            const thumbnail_elem = document.createElement('div');
+            thumbnail_elem.className = 'popup-img-container';
 
-        let description = '';
-        if (item.description)
-            description = item.description;
+            if (isHTML(item.thumbnail)) {
+                thumbnail_elem.innerHTML = item.thumbnail;
+                marker_elem.style.backgroundColor = 'white';
+            } else {
 
-        new mapboxgl.Marker(elem)
-            .setLngLat(coordinates)
+                const parts = item.thumbnail.split('.');
+
+                const img_small_path = `${config.root_url_debug}${config.imgs_folder}/${parts[0]}-100px.${parts[1]}`;
+                const img_big_path = `${config.root_url_debug}${config.imgs_folder}/${parts[0]}-220px.${parts[1]}`;
+
+                marker_elem.style.backgroundImage = `url('${img_small_path}\')`;
+
+                const img_elem = document.createElement('img');
+                img_elem.loading='lazy';
+                img_elem.alt='';
+                img_elem.src = img_big_path;
+
+                thumbnail_elem.appendChild(img_elem);
+            }
+        }
+
+        if (item.about){
+            const about_elem = document.createElement('div');
+            about_elem.className = 'popup-about';
+            if (isHTML(item.link)) {
+                about_elem.innerHTML = item.about;
+            }else {
+                about_elem.appendChild(
+                    Object.assign(document.createElement('p'), {textContent: item.about}));
+            }
+            popup_elem.appendChild(about_elem);
+        }
+
+        if (item.link){
+            const link_block = document.createElement('div');
+            link_block.className = 'popup-link';
+
+            if (isHTML(item.link)) {
+                link_block.innerHTML = item.link;
+            }else {
+                const a_block = Object.assign(document.createElement('a'), {
+                    href: item.link,
+                    textContent: item.link});
+                link_block.appendChild(a_block);
+            }
+            popup_elem.appendChild(link_block);
+        }
+
+
+        new mapboxgl.Marker(marker_elem)
+            .setLngLat(
+                parseCoordinates(item.coordinates, config.map.center, 0.0001).reverse())
             .setPopup(
                 new mapboxgl.Popup({
                     offset: 50
-                })
-                    .setHTML(
-                        `<div class="popup">
-           <h3>${item.title}</h3>
-           <div class="popup-img-container">${img_content}</div>
-           <p>${description}</p>
-          </div>`
-                    )
-            )
+                }).setHTML(popup_elem.outerHTML))
             .addTo(map);
     }
 }

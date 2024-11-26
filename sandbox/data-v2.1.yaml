@@ -31,12 +31,10 @@
   img: turgenev.png
   link: |
     <a href="https://yandex.ru/maps/-/CDxtqZ2U" style="color: green;">Музей Тургенева на Яндекс Картах</a>
-- coords: 55.744816, 37.627167
-  title: Перезвон кафе
+- title: Перезвон кафе
   about: Перезвон кафе
   img: perezvon.png
-- coords: 55.756733, 37.640756
-  title: Cобор Петра и Павла
+- title: Cобор Петра и Павла
   about: Cобор Петра и Павла
   img: petra-pavla-cathidral.png
 - coords: 55.735631, 37.624037
