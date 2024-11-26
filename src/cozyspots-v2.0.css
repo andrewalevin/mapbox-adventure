@@ -56,3 +56,9 @@ body {
 .popup p a {
     word-wrap: break-word;
 }
+
+.popup-img-container img{
+    width: 220px; /* Или фиксированное значение */
+    aspect-ratio: 1 / 1; /* Ширина: высота */
+    object-fit: cover;
+}

@@ -42,11 +42,7 @@ function isHTML(str) {
 }
 
 function parseCoordinates(input, defaultCoords = [0, 0], offsetMultiplier = 0.001) {
-    // Helper to generate random offset
 
-    console.log('🧮🧮 PARSER coords: ', input);
-
-    // Regular expression to match valid coordinate formats
     const coordRegex = /^\s*(-?\d+(\.\d+)?)\s*[,\s]\s*(-?\d+(\.\d+)?)\s*$/;
 
     // Attempt to parse input
@@ -57,19 +53,9 @@ function parseCoordinates(input, defaultCoords = [0, 0], offsetMultiplier = 0.00
         return [lat, lon];
     }
 
-    console.log('☢️ No coordinates found');
-
-    console.log(typeof defaultCoords[0]);
-
     const getRandomOffset = () => (Math.random() * 2 - 1) * offsetMultiplier;
-    const randVal = getRandomOffset();
-    console.log('rand: ', randVal, typeof randVal);
 
-    const virtual_coords =  [defaultCoords[1] + randVal, defaultCoords[0] + randVal];
-    console.log('virtual_coords: ', virtual_coords);
-    console.log('');
-
-    return virtual_coords;
+    return [defaultCoords[1] + getRandomOffset(), defaultCoords[0] + getRandomOffset()];
 }
 
 function mapProcess(data) {
@@ -78,14 +64,13 @@ function mapProcess(data) {
     const radius = getRadius(map.getZoom());
     for (const data_item of data) {
         const { coords = '', title = '', about = '', img = '', link = ''} = data_item;
-        const item = {
+        const spot = {
             coordinates: coords,
             title: title,
             about: about,
             thumbnail: img,
             link: link,
         };
-
 
         const marker_elem = document.createElement('div');
         marker_elem.className = 'marker marker-interest';
@@ -95,29 +80,29 @@ function mapProcess(data) {
         const popup_elem = document.createElement('div');
         popup_elem.className = 'popup';
 
-        if (item.title) {
+        if (spot.title) {
             const title_elem = document.createElement('div');
             title_elem.className = 'popup-title';
-            if (isHTML(item.title)) {
-                title_elem.innerHTML = item.title;
-            }else {
+            if (isHTML(spot.title)) {
+                title_elem.innerHTML = spot.title;
+            } else {
                 title_elem.appendChild(
-                    Object.assign(document.createElement('h3'), {textContent: item.title}));
+                    Object.assign(document.createElement('h3'), {textContent: spot.title}));
             }
             popup_elem.appendChild(title_elem);
         }
 
 
-        if (item.thumbnail) {
+        if (spot.thumbnail) {
             const thumbnail_elem = document.createElement('div');
             thumbnail_elem.className = 'popup-img-container';
 
-            if (isHTML(item.thumbnail)) {
-                thumbnail_elem.innerHTML = item.thumbnail;
+            if (isHTML(spot.thumbnail)) {
+                thumbnail_elem.innerHTML = spot.thumbnail;
                 marker_elem.style.backgroundColor = 'white';
             } else {
 
-                const parts = item.thumbnail.split('.');
+                const parts = spot.thumbnail.split('.');
 
                 const img_small_path = `${config.root_url_debug}${config.imgs_folder}/${parts[0]}-100px.${parts[1]}`;
                 const img_big_path = `${config.root_url_debug}${config.imgs_folder}/${parts[0]}-220px.${parts[1]}`;
@@ -134,41 +119,36 @@ function mapProcess(data) {
             popup_elem.appendChild(thumbnail_elem);
         }
 
-        if (item.about){
+        if (spot.about){
             const about_elem = document.createElement('div');
             about_elem.className = 'popup-about';
-            if (isHTML(item.about)) {
-                about_elem.innerHTML = item.about;
-            }else {
+            if (isHTML(spot.about)) {
+                about_elem.innerHTML = spot.about;
+            } else {
                 about_elem.appendChild(
-                    Object.assign(document.createElement('p'), {textContent: item.about}));
+                    Object.assign(document.createElement('p'), {textContent: spot.about}));
             }
             popup_elem.appendChild(about_elem);
         }
 
-        if (item.link){
-            console.log('💘 LINK: ', item.link);
-
+        if (spot.link){
             const link_elem = document.createElement('div');
             link_elem.className = 'popup-link';
 
-            if (isHTML(item.link)) {
-                link_elem.innerHTML = item.link;
-            }else {
+            if (isHTML(spot.link)) {
+                link_elem.innerHTML = spot.link;
+            } else {
                 const a_block = Object.assign(document.createElement('a'), {
-                    href: item.link,
-                    textContent: item.link});
+                    href: spot.link,
+                    textContent: spot.link});
                 link_elem.appendChild(a_block);
             }
             popup_elem.appendChild(link_elem);
         }
 
 
-        const res_coords = parseCoordinates(item.coordinates, config.map.center, 0.0025).reverse();
-        console.log('📍res_coords: ', res_coords);
-
         new mapboxgl.Marker(marker_elem)
-            .setLngLat(res_coords)
+            .setLngLat(parseCoordinates(spot.coordinates, config.map.center, config.offsetForSpotNoCoords).reverse())
             .setPopup(
                 new mapboxgl.Popup({
                     offset: 50
