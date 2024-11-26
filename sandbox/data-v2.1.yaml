@@ -23,7 +23,9 @@
 - coords: 55.747224, 37.605240
   title: ГМИИ
 - coords: 55.738737, 37.596090
-  title: Музей И.С. Тургенева
+  title: |
+    <h1>Музей И.С. Тургенева</h1>
+
   about: |
     <p><span style="color:#00acc1;">Описание музея Тургенева</span></p>
     <p><span style="color:#ab47bc;"><strong><u>Второе описание музея Тургенева</u></strong></span></p>

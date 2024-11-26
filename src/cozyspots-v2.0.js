@@ -74,6 +74,7 @@ function mapProcess(data) {
             title: title,
             about: about,
             thumbnail: img,
+            link: link,
         };
 
 
@@ -121,12 +122,13 @@ function mapProcess(data) {
 
                 thumbnail_elem.appendChild(img_elem);
             }
+            popup_elem.appendChild(thumbnail_elem);
         }
 
         if (item.about){
             const about_elem = document.createElement('div');
             about_elem.className = 'popup-about';
-            if (isHTML(item.link)) {
+            if (isHTML(item.about)) {
                 about_elem.innerHTML = item.about;
             }else {
                 about_elem.appendChild(
@@ -136,18 +138,20 @@ function mapProcess(data) {
         }
 
         if (item.link){
-            const link_block = document.createElement('div');
-            link_block.className = 'popup-link';
+            console.log('💘 LINK: ', item.link);
+
+            const link_elem = document.createElement('div');
+            link_elem.className = 'popup-link';
 
             if (isHTML(item.link)) {
-                link_block.innerHTML = item.link;
+                link_elem.innerHTML = item.link;
             }else {
                 const a_block = Object.assign(document.createElement('a'), {
                     href: item.link,
                     textContent: item.link});
-                link_block.appendChild(a_block);
+                link_elem.appendChild(a_block);
             }
-            popup_elem.appendChild(link_block);
+            popup_elem.appendChild(link_elem);
         }
 
 
