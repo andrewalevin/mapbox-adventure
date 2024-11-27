@@ -5,21 +5,27 @@
   title: Дорогу утятам!
   about: Дорогу утятам! D
   img: utki.png
+
 - coords: 55.742752, 37.612733
   title: ГЭС-2
   about: ГЭС-2 - D
   img: ges2.png
   link: https://andrewalevin.github.io/mapbox-adventure/
+  kind: culture museum
+
 - coords: 55.743758, 37.597320
   title: Музей А. С. Пушкина
   about: Музей А. С. Пушкина
   img: pushkin.png
   link: https://yandex.ru/maps/-/CDxtqN5l
+  kind: museum
+
 - coords: 55.746589, 37.605129
   title: Галерея искусства стран Европы и Америки XIX – XX веков
   about: Галерея искусства стран Европы и Америки XIX – XX веков
   img: gmii-galery.png
   link: https://yandex.ru/maps/-/CDxtqROY
+  kind: culture museum
 
 - coords: 55.747224, 37.605240
   title: ГМИИ

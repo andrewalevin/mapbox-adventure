@@ -28,28 +28,22 @@
 </head>
 
 <body>
-<div id="map"></div>
+    <div id="map"></div>
 
-<script src="../src/cozyspots-config-default-v2.0.js"></script>
+    <script src="https://andrewalevin.github.io/mapbox-adventure/assets/js-yaml.min.js"></script>
 
-<script>
-    config.map.center = [37.618117, 55.751746];
-    config.map.style = 'mapbox://styles/andrewlevin/clthwxvvg002h01qo40y1e99g';
-    config.map.zoom = 12;
-    config.data_path = 'https://andrewalevin.github.io/mapbox-adventure/sandbox/data-v2.1.yaml';
-    config.root_url_debug = 'https://andrewalevin.github.io/maps/moscow/';
-    config.imgs_folder = 'imgs';
-    config.offsetForSpotNoCoords = 0.0025;
+    <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
 
-</script>
+    <script>
+        let config = {
+            mapboxToken: 'pk.eyJ1IjoiYW5kcmV3bGV2aW4iLCJhIjoiY2t5ZXM5c3cyMWJxYjJvcGJycmw0dGlyeSJ9.9QfCmimkyYicpprraBc-XQ',
+            rootURL: 'https://andrewalevin.github.io/maps/moscow/',
+            dataYamlPath: 'https://andrewalevin.github.io/mapbox-adventure/sandbox/data-v2.1.yaml'
+        }
+    </script>
 
-<script src="../assets/js-yaml.min.js"></script>
-
-<script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
-
-<script src="../src/cozyspots-v2.0.js"></script>
-
+    <script src="../src/cozyspots-v2.0.js"></script>
 
 </body>
-
 </html>
+

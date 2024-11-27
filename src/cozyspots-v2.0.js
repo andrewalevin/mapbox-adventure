@@ -1,177 +1,5 @@
 
 
-mapboxgl.accessToken = 'pk.eyJ1IjoiYW5kcmV3bGV2aW4iLCJhIjoiY2t5ZXM5c3cyMWJxYjJvcGJycmw0dGlyeSJ9.9QfCmimkyYicpprraBc-XQ';
-
-
-const map = new mapboxgl.Map({
-    container: 'map',
-    center: config.map.center,
-    zoom: config.map.zoom,
-    style: config.map.style,
-});
-
-console.log('💚 START');
-
-console.log('💚 config.data_path: ', config.data_path);
-
-
-// file:///Users/andrewlevin/Desktop/mapbox-adventure/sandbox/index.html
-
-fetch(config.data_path)
-    .then((response) => {
-        return response.text();
-    })
-    .then((text) => {
-        return jsyaml.load(text);
-    })
-    .then((data) => {
-        mapProcess(data);
-    });
-
-function getRadius(zoom) {
-    let radius = 9 * (zoom - 9);
-    if (radius < 10)
-        radius = 10;
-    return radius.toFixed(0)
-}
-
-
-function isHTML(str) {
-    const doc = new DOMParser().parseFromString(str, "text/html");
-    return Array.from(doc.body.childNodes).some(node => node.nodeType === 1);
-}
-
-function parseCoordinates(input, defaultCoords = [0, 0], offsetMultiplier = 0.001) {
-
-    const coordRegex = /^\s*(-?\d+(\.\d+)?)\s*[,\s]\s*(-?\d+(\.\d+)?)\s*$/;
-
-    // Attempt to parse input
-    const match = input.match(coordRegex);
-    if (match) {
-        const lat = parseFloat(match[1]);
-        const lon = parseFloat(match[3]);
-        return [lat, lon];
-    }
-
-    const getRandomOffset = () => (Math.random() * 2 - 1) * offsetMultiplier;
-
-    return [defaultCoords[1] + getRandomOffset(), defaultCoords[0] + getRandomOffset()];
-}
-
-function mapProcess(data) {
-    console.log('💙 mapProcess: ', data)
-
-    const radius = getRadius(map.getZoom());
-    for (const data_item of data) {
-        const { coords = '', title = '', about = '', img = '', link = ''} = data_item;
-        const spot = {
-            coordinates: coords,
-            title: title,
-            about: about,
-            thumbnail: img,
-            link: link,
-        };
-
-        const marker_elem = document.createElement('div');
-        marker_elem.className = 'marker marker-interest';
-        marker_elem.style.width = `${radius}px`;
-        marker_elem.style.height = `${radius}px`;
-
-        const popup_elem = document.createElement('div');
-        popup_elem.className = 'popup';
-
-        if (spot.title) {
-            const title_elem = document.createElement('div');
-            title_elem.className = 'popup-title';
-            if (isHTML(spot.title)) {
-                title_elem.innerHTML = spot.title;
-            } else {
-                title_elem.appendChild(
-                    Object.assign(document.createElement('h3'), {textContent: spot.title}));
-            }
-            popup_elem.appendChild(title_elem);
-        }
-
-
-        if (spot.thumbnail) {
-            const thumbnail_elem = document.createElement('div');
-            thumbnail_elem.className = 'popup-img-container';
-
-            if (isHTML(spot.thumbnail)) {
-                thumbnail_elem.innerHTML = spot.thumbnail;
-                marker_elem.style.backgroundColor = 'white';
-            } else {
-
-                const parts = spot.thumbnail.split('.');
-
-                const img_small_path = `${config.root_url_debug}${config.imgs_folder}/${parts[0]}-100px.${parts[1]}`;
-                const img_big_path = `${config.root_url_debug}${config.imgs_folder}/${parts[0]}-220px.${parts[1]}`;
-
-                marker_elem.style.backgroundImage = `url('${img_small_path}\')`;
-
-                const img_elem = document.createElement('img');
-                img_elem.loading='lazy';
-                img_elem.alt='';
-                img_elem.src = img_big_path;
-
-                thumbnail_elem.appendChild(img_elem);
-            }
-            popup_elem.appendChild(thumbnail_elem);
-        }
-
-        if (spot.about){
-            const about_elem = document.createElement('div');
-            about_elem.className = 'popup-about';
-            if (isHTML(spot.about)) {
-                about_elem.innerHTML = spot.about;
-            } else {
-                about_elem.appendChild(
-                    Object.assign(document.createElement('p'), {textContent: spot.about}));
-            }
-            popup_elem.appendChild(about_elem);
-        }
-
-        if (spot.link){
-            const link_elem = document.createElement('div');
-            link_elem.className = 'popup-link';
-
-            if (isHTML(spot.link)) {
-                link_elem.innerHTML = spot.link;
-            } else {
-                const a_block = Object.assign(document.createElement('a'), {
-                    href: spot.link,
-                    textContent: spot.link});
-                link_elem.appendChild(a_block);
-            }
-            popup_elem.appendChild(link_elem);
-        }
-
-
-        new mapboxgl.Marker(marker_elem)
-            .setLngLat(parseCoordinates(spot.coordinates, config.map.center, config.offsetForSpotNoCoords).reverse())
-            .setPopup(
-                new mapboxgl.Popup({
-                    offset: 50
-                }).setHTML(popup_elem.outerHTML))
-            .addTo(map);
-    }
-}
-
-
-function changeSizeByZoom(map, className, zoomFunction, ){
-
-}
-
-map.on('zoom', () => {
-    const radius = getRadius(map.getZoom());
-
-    for (const elem of document.getElementsByClassName("marker")) {
-        elem.style.width = `${radius}px`;
-        elem.style.height = `${radius}px`;
-    }
-});
-
-
 function radiusLine(zoom) {
     console.log('Zoom: ', zoom);
     if (zoom > 11)
@@ -222,6 +50,199 @@ function mapAddLayer(_map, _id, coordinates, color = 'red', width = 4) {
             .addTo(map);
     });
 }
+
+function getRadius(zoom) {
+    const radius = Math.max(9 * (zoom - 9), 10);
+    return Math.round(radius);
+}
+
+function isHTML(str) {
+    const doc = new DOMParser().parseFromString(str, "text/html");
+    return Array.from(doc.body.childNodes).some(node => node.nodeType === 1);
+}
+
+function parseCoordinates(input, defaultCoords = [0, 0], offsetMultiplier = 0.001) {
+    const coordRegex = /^\s*(-?\d+(\.\d+)?)\s*[,\s]\s*(-?\d+(\.\d+)?)\s*$/;
+
+    // Parse input using regex
+    const match = input.match(coordRegex);
+    if (match) {
+        const [_, lat, , lon] = match.map(Number); // Extract and convert to numbers
+        return [lon, lat];
+    }
+
+    // Generate random offset for default coordinates
+    const getRandomOffset = () => (Math.random() * 2 - 1) * offsetMultiplier;
+
+    return [
+        defaultCoords[0] + getRandomOffset(),
+        defaultCoords[1] + getRandomOffset()
+    ];
+}
+
+
+// Function to update the size of markers based on the zoom level
+function updateMarkerSize(map) {
+    const radius = getRadius(map.getZoom());
+    const markers = document.getElementsByClassName("marker");
+
+    // Loop through all markers and update their size
+    for (const markerElem of markers) {
+        markerElem.style.width = `${radius}px`;
+        markerElem.style.height = `${radius}px`;
+    }
+}
+
+function displayBanner(message) {
+    const banner_elem = document.createElement("div");
+    banner_elem.className = "error-banner";
+    banner_elem.textContent = message;
+    document.body.appendChild(banner_elem);
+}
+
+function mapProcess(data) {
+    console.log('💙 mapProcess: ', data)
+
+    const radius = getRadius(map.getZoom());
+    for (const data_item of data) {
+        const { coords = '', title = '', about = '', img = '', link = '', kind = ''} = data_item;
+        const spot = {
+            coordinates: coords,
+            title: title,
+            about: about,
+            thumbnail: img,
+            link: link,
+            kind: kind
+        };
+
+        const markerElem = document.createElement('div');
+        markerElem.className = 'marker marker-interest';
+        markerElem.style.width = `${radius}px`;
+        markerElem.style.height = `${radius}px`;
+
+        console.log('spot.kind: ', spot.kind);
+        if (spot.kind.trim())
+            markerElem.classList.add(...spot.kind.split(' '));
+
+        console.log('📚 CLASSES: ', markerElem.className);
+
+
+        const markerPopupElem = document.createElement('div');
+        markerPopupElem.className = 'popup';
+
+        if (spot.title) {
+            const titleElem = document.createElement('div');
+            titleElem.className = 'popup-title';
+            if (isHTML(spot.title)) {
+                titleElem.innerHTML = spot.title;
+            } else {
+                titleElem.appendChild(
+                    Object.assign(document.createElement('h3'), {textContent: spot.title}));
+            }
+            markerPopupElem.appendChild(titleElem);
+        }
+
+
+        if (spot.thumbnail) {
+            const thumbnailElem = document.createElement('div');
+            thumbnailElem.className = 'popup-img-container';
+
+            if (isHTML(spot.thumbnail)) {
+                thumbnailElem.innerHTML = spot.thumbnail;
+                markerElem.style.backgroundColor = 'white';
+            } else {
+
+                const parts = spot.thumbnail.split('.');
+
+                const imgSmallPath = `${config.rootURL}${config.imgDirPath}/${parts[0]}-100px.${parts[1]}`;
+                const imgBigPath = `${config.rootURL}${config.imgDirPath}/${parts[0]}-220px.${parts[1]}`;
+
+                markerElem.style.backgroundImage = `url('${imgSmallPath}\')`;
+
+                const imgElem = document.createElement('img');
+                imgElem.loading='lazy';
+                imgElem.alt='';
+                imgElem.src = imgBigPath;
+
+                thumbnailElem.appendChild(imgElem);
+            }
+            markerPopupElem.appendChild(thumbnailElem);
+        }
+
+        if (spot.about){
+            const aboutElem = document.createElement('div');
+            aboutElem.className = 'popup-about';
+            if (isHTML(spot.about)) {
+                aboutElem.innerHTML = spot.about;
+            } else {
+                aboutElem.appendChild(
+                    Object.assign(document.createElement('p'), {textContent: spot.about}));
+            }
+            markerPopupElem.appendChild(aboutElem);
+        }
+
+        if (spot.link){
+            const linkElem = document.createElement('div');
+            linkElem.className = 'popup-link';
+
+            if (isHTML(spot.link)) {
+                linkElem.innerHTML = spot.link;
+            } else {
+                const aElem = Object.assign(document.createElement('a'), {
+                    href: spot.link,
+                    textContent: spot.link});
+                linkElem.appendChild(aElem);
+            }
+            markerPopupElem.appendChild(linkElem);
+        }
+
+        new mapboxgl.Marker(markerElem)
+            .setLngLat(parseCoordinates(spot.coordinates, config.mapCenter, config.offsetForSpotNoCoords))
+            .setPopup(new mapboxgl.Popup({offset: 50}).setHTML(markerPopupElem.outerHTML))
+            .addTo(map);
+    }
+}
+
+// Set default values using nullish coalescing operator
+config.mapboxToken = config.mapboxToken ?? '';
+config.mapStyle = config.mapStyle ?? 'mapbox://styles/mapbox/outdoors-v12';
+config.mapZoom = config.mapZoom ?? 12;
+config.mapCenter = config.mapCenter ?? [55.751746, 37.618117];
+config.rootURL = config.rootURL ?? '';
+config.dataYamlPath = config.dataYamlPath ?? 'data.yaml';
+config.offsetForSpotNoCoords = config.offsetForSpotNoCoords ?? 0.0025;
+config.imgDirPath = config.imgDirPath ?? 'imgs';
+
+// Check if mapboxToken is missing
+if (!config.mapboxToken?.trim()) {
+    displayBanner("Token (mapboxgl.accessToken) is missing!");
+}
+
+mapboxgl.accessToken = config.mapboxToken;
+const map = new mapboxgl.Map({
+    container: 'map',
+    center: config.mapCenter.reverse(),
+    zoom: config.mapZoom,
+    style: config.mapStyle,
+});
+
+console.log('💚 config.dataYamlPath: ', config.dataYamlPath);
+
+
+fetch(config.dataYamlPath)
+    .then(response => response.text())
+    .then(jsyaml.load)
+    .then(mapProcess)
+    .catch(error => {
+        console.error('Error processing the map data:', error);
+    });
+
+
+// Add zoom event listener to the map
+map.on('zoom', () => {
+    updateMarkerSize(map);
+});
+
 
 
 
