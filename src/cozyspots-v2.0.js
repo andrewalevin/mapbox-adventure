@@ -120,15 +120,13 @@ function mapProcess(data) {
         markerElem.style.width = `${radius}px`;
         markerElem.style.height = `${radius}px`;
 
-        console.log('spot.kind: ', spot.kind);
-        if (spot.kind.trim())
-            markerElem.classList.add(...spot.kind.split(' '));
-
-        console.log('📚 CLASSES: ', markerElem.className);
-
-
         const markerPopupElem = document.createElement('div');
         markerPopupElem.className = 'popup';
+
+        if (spot.kind.trim()) {
+            markerElem.classList.add(...spot.kind.split(' '));
+            markerPopupElem.classList.add(...spot.kind.split(' '));
+        }
 
         if (spot.title) {
             const titleElem = document.createElement('div');
