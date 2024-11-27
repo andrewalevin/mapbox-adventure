@@ -188,7 +188,8 @@ function mapProcess(data) {
             } else {
                 const aElem = Object.assign(document.createElement('a'), {
                     href: spot.link,
-                    textContent: spot.link});
+                    textContent: spot.link,
+                    target: '_blank'});
                 linkElem.appendChild(aElem);
             }
             markerPopupElem.appendChild(linkElem);
