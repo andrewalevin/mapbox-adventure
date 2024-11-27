@@ -3,37 +3,38 @@
 
 <head>
     <meta charset="utf-8">
-
-    <title>🗺 SandBox</title>
-
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="description" content="🗺 Explore SandBox interactive map with Mapbox and custom features.">
     <meta property="og:title" content="🗺 SandBox" />
     <meta property="og:description" content="🗺 SandBox Description" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="/maps/sandbox/" />
     <meta property="og:image" content="/maps/sandbox/preview.png" />
 
-    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+    <title>🗺 SandBox</title>
 
-    <link href="../src/style.css" rel="stylesheet">
-
+    <!-- Mapbox CSS -->
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.css" rel="stylesheet">
 
+    <!-- Mapbox JS -->
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.js"></script>
 
+    <!-- Mapbox-Adventure.CozySpots CSS -->
     <link href="../src/cozyspots-v2.0.css" rel="stylesheet">
 
+    <!-- Inline styles if necessary -->
     <style>
 
     </style>
 </head>
-
 <body>
     <div id="map"></div>
 
+    <!-- JS Libraries -->
     <script src="https://andrewalevin.github.io/mapbox-adventure/assets/js-yaml.min.js"></script>
-
     <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
 
+    <!-- Configurations -->
     <script>
         let config = {
             mapboxToken: 'pk.eyJ1IjoiYW5kcmV3bGV2aW4iLCJhIjoiY2t5ZXM5c3cyMWJxYjJvcGJycmw0dGlyeSJ9.9QfCmimkyYicpprraBc-XQ',
@@ -42,6 +43,7 @@
         }
     </script>
 
+    <!-- Mapbox-Adventure.CozySpots JS -->
     <script src="../src/cozyspots-v2.0.js"></script>
 
 </body>
