@@ -4,67 +4,81 @@ Mapbox Adventure lets you design your own maps
 
 https://andrewalevin.github.io/mapbox-adventure/
 
+## 🗺 Cozyspots
 
-### Example usage
+- `index.html`
+- `data.yaml`
+
+
+#### index.html
 
 ```html
-
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
     <meta charset="utf-8">
-    <title>🗺 2 Moscow</title>
-    <meta property="og:title" content="🗺 2 Moscow Map" />
-    <meta property="og:description" content="🗺 2 Moscow Map Description" />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="/maps2/moscow/" />
-    <meta property="og:image" content="preview2.png" />
-
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+    <!-- 💚 CHANGE 📝 -->
+    <meta name="description" content="🗺 Explore SandBox interactive map with Mapbox and custom features.">
+    <!-- 💚 CHANGE 📝 -->
+    <meta property="og:title" content="🗺 SandBox" />
 
-    <link href="https://andrewalevin.github.io/mapbox-adventure/src/style.css" rel="stylesheet">
+    <!-- 💚 CHANGE 📝 -->
+    <meta property="og:description" content="🗺 SandBox Description" />
+    <meta property="og:type" content="website" />
+    <!-- 💚 CHANGE 📝 -->
+    <meta property="og:url" content="/maps2/sandbox/" />
+    <!-- 💚 CHANGE 📝 -->
+    <meta property="og:image" content="/maps2/sandbox/preview.png" />
 
-    <link href="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.css" rel="stylesheet">
-    <script src="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.js"></script>
+    <!-- 💚 CHANGE 📝 -->
+    <title>🗺 SandBox</title>
 
+    <!-- Mapbox CSS -->
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.8.0/mapbox-gl.css" rel="stylesheet">
 
+    <!-- Mapbox JS -->
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.8.0/mapbox-gl.js"></script>
+
+    <!-- Mapbox-Adventure.CozySpots CSS -->
     <link href="https://andrewalevin.github.io/mapbox-adventure/src/cozyspots-v2.0.css" rel="stylesheet">
 
+    <!-- Inline styles if necessary -->
     <style>
 
     </style>
 </head>
-
 <body>
 <div id="map"></div>
 
+<!-- JS Libraries -->
 <script src="https://andrewalevin.github.io/mapbox-adventure/assets/js-yaml.min.js"></script>
-
 <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
 
-
+<!-- 💚 CHANGE 📝 -->
+<!-- Configurations -->
 <script>
     let config = {
-        mapboxToken: 'pk.eyJ1IjoiYW5kcmV3bGV2aW4iLCJhIjoiY2t5ZXM5c3cyMWJxYjJvcGJycmw0dGlyeSJ9.9QfCmimkyYicpprraBc-XQ',
+        mapboxToken: '****TOKEN****',
     }
 </script>
 
+<!-- Mapbox-Adventure.CozySpots JS -->
 <script src="https://andrewalevin.github.io/mapbox-adventure/src/cozyspots-v2.0.js"></script>
 
 </body>
-
 </html>
-
 ```
 
 
-### Yaml Example
+#### data.yaml
 
 ```yaml
 %YAML 1.2
 ---
 
+# Full 
 - coords: 55.728324, 37.555595
   title: Дорогу утятам!
   about: Дорогу утятам! D
@@ -94,10 +108,10 @@ https://andrewalevin.github.io/mapbox-adventure/
 - coords: 55.747224, 37.605240
   title: ГМИИ
 
+# Overriding all avaliable rows
 - coords: 55.738737, 37.596090
   title: |
     <h1>Музей И.С. Тургенева</h1>
-
   about: |
     <p><span style="color:#00acc1;">Описание музея Тургенева</span></p>
     <p><span style="color:#ab47bc;"><strong><u>Второе описание музея Тургенева</u></strong></span></p>
@@ -121,5 +135,13 @@ https://andrewalevin.github.io/mapbox-adventure/
 
 - coords: 55.724326, 37.592946
   title: Андреевский мост
+```
 
+
+#### config all settings
+
+```js
+let config = {
+        mapboxToken: '****TOKEN****',
+    }
 ```

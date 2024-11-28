@@ -140,7 +140,6 @@ function mapProcess(data) {
             markerPopupElem.appendChild(titleElem);
         }
 
-
         if (spot.thumbnail) {
             const thumbnailElem = document.createElement('div');
             thumbnailElem.className = 'popup-img-container';
@@ -149,7 +148,6 @@ function mapProcess(data) {
                 thumbnailElem.innerHTML = spot.thumbnail;
                 markerElem.style.backgroundColor = 'white';
             } else {
-
                 const parts = spot.thumbnail.split('.');
 
                 const imgSmallPath = `${config.rootURL}${config.imgDirPath}/${parts[0]}-100px.${parts[1]}`;
