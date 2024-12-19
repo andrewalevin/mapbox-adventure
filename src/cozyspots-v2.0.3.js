@@ -100,7 +100,7 @@ function displayBanner(message) {
     document.body.appendChild(banner_elem);
 }
 
-function adjustMarkerPosition(marker, index, nearbyMarkers, offsetMultiplier = 0.001) {
+function adjustMarkerPosition(marker, index, nearbyMarkers, offsetMultiplier = 0.0005) {
     const angle = (index / nearbyMarkers.length) * 2 * Math.PI; // Угол смещения
     const offsetX = Math.cos(angle) * offsetMultiplier; // Смещение по долготе
     const offsetY = Math.sin(angle) * offsetMultiplier; // Смещение по широте
