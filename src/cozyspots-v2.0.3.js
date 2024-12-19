@@ -100,7 +100,7 @@ function displayBanner(message) {
     document.body.appendChild(banner_elem);
 }
 
-function adjustMarkerPosition(marker, index, nearbyMarkers, offsetMultiplier = 0.0001) {
+function adjustMarkerPosition(marker, index, nearbyMarkers, offsetMultiplier = 0.001) {
     const angle = (index / nearbyMarkers.length) * 2 * Math.PI; // Угол смещения
     const offsetX = Math.cos(angle) * offsetMultiplier; // Смещение по долготе
     const offsetY = Math.sin(angle) * offsetMultiplier; // Смещение по широте
@@ -111,7 +111,7 @@ function adjustMarkerPosition(marker, index, nearbyMarkers, offsetMultiplier = 0
     ];
 }
 
-function findNearbyMarkers(marker, allMarkers, threshold = 0.001) {
+function findNearbyMarkers(marker, allMarkers, threshold = 0.01) {
     return allMarkers.filter(otherMarker => {
         return (
             Math.abs(marker[0] - otherMarker[0]) < threshold &&
