@@ -241,7 +241,10 @@ function mapEventHandler(eventType, callbacks) {
 async function fetchRoute(route) {
     try {
         // Выполняем fetch для получения данных из .gpx файла
-        const response = await fetch(route.path);
+        const currentUrl = window.location.href;
+        console.log('Current URL:', currentUrl);
+
+        const response = await fetch(currentUrl + '/' + route.path);
 
         if (!response.ok) {
             throw new Error(`Ошибка при загрузке маршрута: ${route.path}`);
