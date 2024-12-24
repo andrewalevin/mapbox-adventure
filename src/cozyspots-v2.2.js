@@ -243,7 +243,7 @@ async function fetchRoute(route) {
         // Выполняем fetch для получения данных из .gpx файла
         const currentUrl = window.location.href;
         console.log('Current URL:', currentUrl);
-        const url = currentUrl + '/' + route.path;
+        const url = currentUrl + route.path;
         console.log('url: ', url);
 
         const response = await fetch(url);
