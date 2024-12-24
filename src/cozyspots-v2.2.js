@@ -131,18 +131,6 @@ function spotPlaceDataOnMap(data) {
                     className: 'popup-title',
                     innerHTML: isHTML(title) ? title : `<h3>${title}</h3>`}));
 
-        if (about)
-            markerPopupElem.appendChild(
-                Object.assign(document.createElement('div'), {
-                    className: 'popup-about',
-                    innerHTML: isHTML(about) ? about : `<p>${about}</p>`}));
-
-        if (link)
-            markerPopupElem.appendChild(
-                Object.assign(document.createElement('div'), {
-                    className: 'popup-link',
-                    innerHTML: isHTML(link) ? link : `<a href="${link}" target="_blank">${link}</a>`}));
-
         if (kind.trim())
             markerPopupElem.classList.add(...kind.split(' '));
 
@@ -168,6 +156,19 @@ function spotPlaceDataOnMap(data) {
                 }));
             }
         }
+
+        if (about)
+            markerPopupElem.appendChild(
+                Object.assign(document.createElement('div'), {
+                    className: 'popup-about',
+                    innerHTML: isHTML(about) ? about : `<p>${about}</p>`}));
+
+        if (link)
+            markerPopupElem.appendChild(
+                Object.assign(document.createElement('div'), {
+                    className: 'popup-link',
+                    innerHTML: isHTML(link) ? link : `<a href="${link}" target="_blank">${link}</a>`}));
+
 
         new mapboxgl.Marker(markerElem)
             .setLngLat(adjustedCoordinates)
@@ -237,7 +238,101 @@ function mapEventHandler(eventType, callbacks) {
 //  🚀 RUN SETUP
 
 
+async function fetchRoute(route) {
+    try {
+        // Выполняем fetch для получения данных из .gpx файла
+        const response = await fetch(route.path);
 
+        if (!response.ok) {
+            throw new Error(`Ошибка при загрузке маршрута: ${route.path}`);
+        }
+
+        // Читаем ответ как текст
+        const text = await response.text();
+
+        // Парсим текст как XML
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(text, "application/xml");
+
+        // Извлекаем все элементы trkpt
+        const trkpts = xmlDoc.getElementsByTagName("trkpt");
+
+        // Преобразуем их в массив объектов с нужными данными
+        const points = Array.from(trkpts).map(trkpt => ({
+            lat: trkpt.getAttribute("lat"),
+            lon: trkpt.getAttribute("lon"),
+            ele: trkpt.getElementsByTagName("ele")[0]?.textContent,
+            time: trkpt.getElementsByTagName("time")[0]?.textContent
+        }));
+
+        // Возвращаем объект с данными
+        return {
+            path: route.path,
+            title: route.title || 'Без названия',
+            color: route.color,
+            points: points
+        };
+
+    } catch (error) {
+        console.error(`Ошибка при обработке маршрута ${route.path}: ${error.message}`);
+        throw error; // выбрасываем ошибку, чтобы она была обработана в Promise.all
+    }
+}
+
+
+function routesAllPlace(data){
+    console.log('🐠 place data');
+    console.log(data);
+
+    data.forEach(function(route, index) {
+        console.log(`Index: ${index}, Number: ${route}`);
+
+        const coords = route.points.map(point => [point.lon, point.lat]);
+        console.log(coords);
+
+        const width = 4;
+        map.addLayer({
+            id: route.path,
+            type: 'line',
+            source: {
+                type: 'geojson',
+                lineMetrics: true,
+                data: {
+                    'type': 'FeatureCollection',
+                    'features': [{
+                        'type': 'Feature',
+                        'properties': {},
+                        'geometry': {
+                            'coordinates': coords,
+                            'type': 'LineString'
+                        }
+                    }]
+                }
+            },
+            paint: {'line-color': route.color, 'line-width': width},
+            layout: {'line-cap': 'round', 'line-join': 'round'}
+        });
+
+    });
+
+}
+
+function routesPlaceMap() {
+    console.log('🐠 routesPlaceMap');
+
+    const routePromises = config.routes.map(route => {
+        console.log('Fetching route from path:', route.path);
+        return fetchRoute(route);
+    });
+
+    Promise.all(routePromises)
+        .then(results => {
+            routesAllPlace(results);  // All fetches complete
+        })
+        .catch(error => {
+            console.error(`Ошибка при обработке маршрутов: ${error.message}`);
+        });
+}
 
 
 mapSetup();
@@ -250,6 +345,9 @@ fetch(config.spotDataYamlPath)
     .catch(error => {
         console.error('Error processing the map data:', error);
     });
+
+if (config.routes)
+    routesPlaceMap();
 
 
 mapEventHandler('zoom', [
