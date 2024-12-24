@@ -51,15 +51,18 @@ function mapAddLayer(_map, _id, coordinates, color = 'red', width = 4) {
     });
 }
 
+
 function getRadius(zoom) {
     const radius = Math.max(9 * (zoom - 9), 10);
     return Math.round(radius);
 }
 
+
 function isHTML(str) {
     const doc = new DOMParser().parseFromString(str, "text/html");
     return Array.from(doc.body.childNodes).some(node => node.nodeType === 1);
 }
+
 
 function parseCoordinates(input, defaultCoords = [0, 0], offsetMultiplier = 0.001) {
     const coordRegex = /^\s*(-?\d+(\.\d+)?)\s*[,\s]\s*(-?\d+(\.\d+)?)\s*$/;
@@ -93,12 +96,14 @@ function updateMarkerSize(map) {
     }
 }
 
+
 function displayBanner(message) {
     const banner_elem = document.createElement("div");
     banner_elem.className = "error-banner";
     banner_elem.textContent = message;
     document.body.appendChild(banner_elem);
 }
+
 
 function adjustMarkerPosition(marker, index, nearbyMarkers, offsetMultiplier = 0.0005) {
     const angle = (index / nearbyMarkers.length) * 2 * Math.PI; // Угол смещения
@@ -111,6 +116,7 @@ function adjustMarkerPosition(marker, index, nearbyMarkers, offsetMultiplier = 0
     ];
 }
 
+
 function findNearbyMarkers(marker, allMarkers, threshold = 0.01) {
     return allMarkers.filter(otherMarker => {
         return (
@@ -119,6 +125,7 @@ function findNearbyMarkers(marker, allMarkers, threshold = 0.01) {
         );
     });
 }
+
 
 function mapProcess(data) {
     console.log('💙 mapProcess: ', data);

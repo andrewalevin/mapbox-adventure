@@ -81,37 +81,24 @@ function parseCoordinates(input, defaultCoords = [0, 0], offsetMultiplier = 0.00
 }
 
 
-// Function to update the size of markers based on the zoom level
-function updateMarkerSize(map) {
-    const radius = getRadius(map.getZoom());
-    const markers = document.getElementsByClassName("marker");
+function adjustMarkerPosition(marker, index, nearbyMarkers, offsetMultiplier = 0.0005) {
+    const angle = (index / nearbyMarkers.length) * 2 * Math.PI; // Угол смещения
+    return [
+        marker[0] + Math.cos(angle) * offsetMultiplier,
+        marker[1] + Math.sin(angle) * offsetMultiplier
+    ];
+}
 
-    // Loop through all markers and update their size
-    for (const markerElem of markers) {
+
+function spotUpdateMarkerSize() {
+    const radius = getRadius(map.getZoom());
+    for (const markerElem of  document.getElementsByClassName("marker")) {
         markerElem.style.width = `${radius}px`;
         markerElem.style.height = `${radius}px`;
     }
 }
 
-function displayBanner(message) {
-    const banner_elem = document.createElement("div");
-    banner_elem.className = "error-banner";
-    banner_elem.textContent = message;
-    document.body.appendChild(banner_elem);
-}
-
-function adjustMarkerPosition(marker, index, nearbyMarkers, offsetMultiplier = 0.0005) {
-    const angle = (index / nearbyMarkers.length) * 2 * Math.PI; // Угол смещения
-    const offsetX = Math.cos(angle) * offsetMultiplier; // Смещение по долготе
-    const offsetY = Math.sin(angle) * offsetMultiplier; // Смещение по широте
-
-    return [
-        marker[0] + offsetX,
-        marker[1] + offsetY
-    ];
-}
-
-function findNearbyMarkers(marker, allMarkers, threshold = 0.01) {
+function spotFindNearbyMarkers(marker, allMarkers, threshold = 0.01) {
     return allMarkers.filter(otherMarker => {
         return (
             Math.abs(marker[0] - otherMarker[0]) < threshold &&
@@ -120,152 +107,154 @@ function findNearbyMarkers(marker, allMarkers, threshold = 0.01) {
     });
 }
 
-function mapProcess(data) {
-    console.log('💙 mapProcess: ', data);
 
+function spotPlaceDataOnMap(data) {
     const radius = getRadius(map.getZoom());
-    const allCoordinates = data.map(item => parseCoordinates(item.coords, config.mapCenter, config.offsetForSpotNoCoords));
+    const allCoordinates = data.map(item => parseCoordinates(item.coords, config.mapCenter, config.spotOffsetForSpotNoCoords));
 
-    for (let i = 0; i < data.length; i++) {
-        const dataItem = data[i];
+    data.forEach((dataItem, index) => {
         const { coords = '', title = '', about = '', img = '', link = '', kind = '' } = dataItem;
-        const originalCoordinates = parseCoordinates(coords, config.mapCenter, config.offsetForSpotNoCoords);
+        const originalCoordinates = parseCoordinates(coords, config.mapCenter, config.spotOffsetForSpotNoCoords);
+        const nearbyMarkers = spotFindNearbyMarkers(originalCoordinates, allCoordinates);
+        const adjustedCoordinates = adjustMarkerPosition(originalCoordinates, index, nearbyMarkers);
 
-        // Находим близко расположенные маркеры
-        const nearbyMarkers = findNearbyMarkers(originalCoordinates, allCoordinates);
+        const markerElem = Object.assign(document.createElement('div'), {
+            className: `marker marker-interest ${kind.trim()}`.trim(),
+            style: `width: ${radius}px; height: ${radius}px;`});
 
-        // Рассчитываем смещение для текущего маркера
-        const adjustedCoordinates = adjustMarkerPosition(originalCoordinates, i, nearbyMarkers);
+        const markerPopupElem = Object.assign(document.createElement('div'), {
+            className: 'popup'});
 
-        // Создаем элемент маркера
-        const markerElem = document.createElement('div');
-        markerElem.className = 'marker marker-interest';
-        markerElem.style.width = `${radius}px`;
-        markerElem.style.height = `${radius}px`;
+        if (title)
+            markerPopupElem.appendChild(
+                Object.assign(document.createElement('div'), {
+                    className: 'popup-title',
+                    innerHTML: isHTML(title) ? title : `<h3>${title}</h3>`}));
 
-        const markerPopupElem = document.createElement('div');
-        markerPopupElem.className = 'popup';
+        if (about)
+            markerPopupElem.appendChild(
+                Object.assign(document.createElement('div'), {
+                    className: 'popup-about',
+                    innerHTML: isHTML(about) ? about : `<p>${about}</p>`}));
 
-        if (kind.trim()) {
-            markerElem.classList.add(...kind.split(' '));
+        if (link)
+            markerPopupElem.appendChild(
+                Object.assign(document.createElement('div'), {
+                    className: 'popup-link',
+                    innerHTML: isHTML(link) ? link : `<a href="${link}" target="_blank">${link}</a>`}));
+
+        if (kind.trim())
             markerPopupElem.classList.add(...kind.split(' '));
-        }
-
-        if (title) {
-            const titleElem = document.createElement('div');
-            titleElem.className = 'popup-title';
-            if (isHTML(title)) {
-                titleElem.innerHTML = title;
-            } else {
-                titleElem.appendChild(
-                    Object.assign(document.createElement('h3'), { textContent: title })
-                );
-            }
-            markerPopupElem.appendChild(titleElem);
-        }
 
         if (img) {
-            const thumbnailElem = document.createElement('div');
-            thumbnailElem.className = 'popup-img-container';
-
             if (isHTML(img)) {
-                thumbnailElem.innerHTML = img;
-                markerElem.style.backgroundColor = 'white';
-            } else {
-                const parts = img.split('.');
+                markerPopupElem.appendChild(
+                    Object.assign(document.createElement('div'), {
+                        className: 'popup-img-container',
+                        innerHTML: img,
+                        style: {
+                            backgroundColor: 'white' }}));
 
-                const imgSmallPath = `${config.rootURL}${config.imgDirPath}/${parts[0]}-100px.${parts[1]}`;
-                const imgBigPath = `${config.rootURL}${config.imgDirPath}/${parts[0]}-220px.${parts[1]}`;
+            } else {
+                const [name, ext] = img.split('.');
+                const imgSmallPath = `${config.spotPicsDirPath}/${name}-100px.${ext}`;
+                const imgBigPath = `${config.spotPicsDirPath}/${name}-220px.${ext}`;
 
                 markerElem.style.backgroundImage = `url('${imgSmallPath}\')`;
 
-                const imgElem = document.createElement('img');
-                imgElem.loading = 'lazy';
-                imgElem.alt = '';
-                imgElem.src = imgBigPath;
-
-                thumbnailElem.appendChild(imgElem);
+                markerPopupElem.appendChild(Object.assign(document.createElement('div'), {
+                    className: 'popup-img-container',
+                    innerHTML: `<img loading="lazy" alt="" src="${imgBigPath}">`
+                }));
             }
-            markerPopupElem.appendChild(thumbnailElem);
         }
 
-        if (about) {
-            const aboutElem = document.createElement('div');
-            aboutElem.className = 'popup-about';
-            if (isHTML(about)) {
-                aboutElem.innerHTML = about;
-            } else {
-                aboutElem.appendChild(
-                    Object.assign(document.createElement('p'), { textContent: about })
-                );
-            }
-            markerPopupElem.appendChild(aboutElem);
-        }
-
-        if (link) {
-            const linkElem = document.createElement('div');
-            linkElem.className = 'popup-link';
-
-            if (isHTML(link)) {
-                linkElem.innerHTML = link;
-            } else {
-                const aElem = Object.assign(document.createElement('a'), {
-                    href: link,
-                    textContent: link,
-                    target: '_blank'
-                });
-                linkElem.appendChild(aElem);
-            }
-            markerPopupElem.appendChild(linkElem);
-        }
-
-        // Добавляем маркер на карту с учетом смещенных координат
         new mapboxgl.Marker(markerElem)
             .setLngLat(adjustedCoordinates)
             .setPopup(new mapboxgl.Popup({ offset: 50 }).setHTML(markerPopupElem.outerHTML))
             .addTo(map);
+    });
+}
+
+
+function mapSetup() {
+    // Default configuration
+    const defaultConfig = {
+        mapboxToken: '',
+        mapStyle: 'mapbox://styles/mapbox/outdoors-v12',
+        mapZoom: 12,
+        mapCenter: [55.751746, 37.618117],
+        spotDataYamlPath: 'data.yaml',
+        spotOffsetForSpotNoCoords: 0.0025,
+        spotPicsDirPath: 'imgs',
+    };
+
+    // Merge default and user-provided configuration
+    const config = { ...defaultConfig, ...window.config };
+    window.config = config; // Store the merged configuration globally
+
+    try {
+        // Validate critical configuration
+        if (!config.mapboxToken?.trim()) {
+            throw new Error("Token (mapboxgl.accessToken) is missing!");
+        }
+
+        // Set Mapbox access token
+        mapboxgl.accessToken = config.mapboxToken;
+
+        // Initialize and store the map instance
+        window.map = new mapboxgl.Map({
+            container: 'map',
+            center: [...config.mapCenter].reverse(), // Reverse without mutating the original array
+            zoom: config.mapZoom,
+            style: config.mapStyle,
+        });
+    } catch (error) {
+        Object.assign(document.createElement("div"), {
+            className: "error-banner",
+            textContent: error.message
+        });
     }
 }
 
-// Set default values using nullish coalescing operator
-config.mapboxToken = config.mapboxToken ?? '';
-config.mapStyle = config.mapStyle ?? 'mapbox://styles/mapbox/outdoors-v12';
-config.mapZoom = config.mapZoom ?? 12;
-config.mapCenter = config.mapCenter ?? [55.751746, 37.618117];
-config.rootURL = config.rootURL ?? '';
-config.dataYamlPath = config.dataYamlPath ?? 'data.yaml';
-config.offsetForSpotNoCoords = config.offsetForSpotNoCoords ?? 0.0025;
-config.imgDirPath = config.imgDirPath ?? 'imgs';
+function mapEventHandler(eventType, callbacks) {
+    if (!Array.isArray(callbacks) || typeof map.on !== 'function') {
+        throw new Error("Invalid input: Ensure 'callbacks' is an array and 'map' is a valid Mapbox instance.");
+    }
 
-// Check if mapboxToken is missing
-if (!config.mapboxToken?.trim()) {
-    displayBanner("Token (mapboxgl.accessToken) is missing!");
+    callbacks.forEach(callback => {
+        if (typeof callback === 'function') {
+            map.on(eventType, callback);
+        } else {
+            console.warn("Skipped a non-function callback:", callback);
+        }
+    });
 }
 
-mapboxgl.accessToken = config.mapboxToken;
-const map = new mapboxgl.Map({
-    container: 'map',
-    center: config.mapCenter.reverse(),
-    zoom: config.mapZoom,
-    style: config.mapStyle,
-});
-
-console.log('💚 config.dataYamlPath: ', config.dataYamlPath);
 
 
-fetch(config.dataYamlPath)
+
+//  🚀 RUN SETUP
+
+
+
+
+
+mapSetup();
+
+// Fetch Spots
+fetch(config.spotDataYamlPath)
     .then(response => response.text())
     .then(jsyaml.load)
-    .then(mapProcess)
+    .then(spotPlaceDataOnMap)
     .catch(error => {
         console.error('Error processing the map data:', error);
     });
 
 
-// Add zoom event listener to the map
-map.on('zoom', () => {
-    updateMarkerSize(map);
-});
+mapEventHandler('zoom', [
+    () => spotUpdateMarkerSize()
+]);
 
 
 
