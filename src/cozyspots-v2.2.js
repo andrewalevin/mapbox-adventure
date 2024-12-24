@@ -281,14 +281,10 @@ async function fetchRoute(route) {
 
 
 function routesAllPlace(data){
-    console.log('🐠 place data');
-    console.log(data);
+    console.log('🐠 routesAllPlace:');
 
     data.forEach(function(route, index) {
-        console.log(`Index: ${index}, Number: ${route}`);
-
         const coords = route.points.map(point => [point.lon, point.lat]);
-        console.log(coords);
 
         const width = 4;
         map.addLayer({
