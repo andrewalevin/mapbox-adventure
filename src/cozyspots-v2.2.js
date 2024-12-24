@@ -346,11 +346,11 @@ if (config.routes)
     routesPlaceMap();
 
 
-
+/*
 mapEventHandler('zoom', [
     () => spotUpdateMarkerSize()
 ]);
-
+*/
 
 
 
