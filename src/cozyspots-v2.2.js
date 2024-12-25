@@ -194,6 +194,8 @@ function mapSetup() {
     const config = { ...defaultConfig, ...window.config };
     window.config = config; // Store the merged configuration globally
 
+    console.log('🛠🐝 CONFIG: ', config);
+
     try {
         // Validate critical configuration
         if (!config.mapboxToken?.trim()) {
@@ -348,19 +350,36 @@ function routesPlaceMap() {
 }
 
 
-mapSetup();
+function spotsPlaceMap(){
+    // Fetch Spots
+    console.log('🦋 spotsPlaceMap() config.spotDataYamlPath: ', config.spotDataYamlPath);
 
-// Fetch Spots
-fetch(config.spotDataYamlPath)
-    .then(response => response.text())
-    .then(jsyaml.load)
-    .then(spotPlaceDataOnMap)
-    .catch(error => {
-        console.error('Error processing the map data:', error);
-    });
+    try {
+        // Fetch Spots
+        fetch(config.spotDataYamlPath)
+            .then(response => response.text())
+            .then(jsyaml.load)
+            .then(spotPlaceDataOnMap)
+            .catch(error => {
+                console.error('Error processing the map data:', error);
+            });
+    } catch (error) {
+        console.error('Unexpected error:', error);
+    }
+
+}
+
+
+
+
+mapSetup();
 
 if (config.routes)
     routesPlaceMap();
+
+spotsPlaceMap();
+
+
 
 
 /*
