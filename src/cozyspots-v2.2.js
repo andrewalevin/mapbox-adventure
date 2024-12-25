@@ -293,6 +293,8 @@ function routesAllPlace(data){
     data.forEach(function(route, index) {
         const coords = route.points.map(point => [point.lon, point.lat]);
 
+        console.log('🍔 Add Layer: ', )
+        console.log(route);
         const width = 4;
         map.addLayer({
             id: route.path,
