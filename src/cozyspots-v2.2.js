@@ -314,8 +314,7 @@ function routesAllPlace(data){
             },
             paint: {'line-color': route.color, 'line-width': width},
             layout: {'line-cap': 'round', 'line-join': 'round'}
-        });
-
+        })
     });
 
 }
