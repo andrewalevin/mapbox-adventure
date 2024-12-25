@@ -240,10 +240,9 @@ function mapEventHandler(eventType, callbacks) {
 
 async function fetchRoute(route) {
     try {
-        // Выполняем fetch для получения данных из .gpx файла
-        const currentUrl = window.location.href;
-        console.log('Current URL:', currentUrl);
-        const url = currentUrl + route.path;
+        let  url = new URL(window.location.href);
+        url = `${url.origin}${url.pathname.substring(0, url.pathname.lastIndexOf('/'))}`;
+        url = url + '/' + route.path;
         console.log('url: ', url);
 
         const response = await fetch(url);
@@ -270,10 +269,13 @@ async function fetchRoute(route) {
             time: trkpt.getElementsByTagName("time")[0]?.textContent
         }));
 
+        console.log('🍋 Points: ');
+        console.log(points);
+
         // Возвращаем объект с данными
         return {
             path: route.path,
-            title: route.title || 'Без названия',
+            title: route.title || 'No Title',
             color: route.color,
             points: points
         };
