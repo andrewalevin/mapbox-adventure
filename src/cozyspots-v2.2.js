@@ -290,11 +290,20 @@ async function fetchRoute(route) {
 function routesAllPlace(data){
     console.log('🐠 routesAllPlace:');
 
+    let show = {
+        'lat': 13232,
+        'lon': 54.2
+    }
+
+    console.log('SHOW', show);
+
     data.forEach(function(route, index) {
-        const coords = route.points.map(point => [point.lon, point.lat]);
+        const coords = route.points.map(point => [parseFloat(point.lon), parseFloat(point.lat)]);
+
 
         console.log('🍔 Add Layer: ', )
         console.log(route);
+        console.log(coords);
         const width = 4;
         map.addLayer({
             id: route.path,
