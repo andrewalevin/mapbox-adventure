@@ -1,0 +1,36 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polyline helper</title>
+    <script type="text/javascript" nonce="d91ba5fdd845462c8c3718a9a99" src="//local.adguard.org?ts=1735163841386&amp;type=content-script&amp;dmn=docs.maptiler.com&amp;url=https%3A%2F%2Fdocs.maptiler.com%2Fsdk-js%2Fexamples%2Fhelper-polyline-gpx%2Fcode1%2F&amp;app=org.mozilla.firefoxdeveloperedition&amp;css=3&amp;js=1&amp;rel=1&amp;rji=1&amp;sbe=1"></script>
+    <script type="text/javascript" nonce="d91ba5fdd845462c8c3718a9a99" src="//local.adguard.org?ts=1735163841386&amp;name=AdGuard%20Extra&amp;type=user-script"></script><script src="https://cdn.maptiler.com/maptiler-sdk-js/v2.5.1/maptiler-sdk.umd.js"></script>
+    <link href="https://cdn.maptiler.com/maptiler-sdk-js/v2.5.1/maptiler-sdk.css" rel="stylesheet" />
+    <style>
+        body {margin: 0; padding: 0;}
+        #map {position: absolute; top: 0; bottom: 0; width: 100%;}
+    </style>
+</head>
+<body>
+<div id="map"></div>
+
+<script>
+    maptilersdk.config.apiKey = '1OT3V9m4CRRy9mVvWosr';
+    const map = new maptilersdk.Map({
+        container: 'map',
+        zoom: 10,
+        center: [36.789875, 55.711124],
+        style: ''
+    });
+
+    map.on('load', async function () {
+        await maptilersdk.helpers.addPolyline(map, {
+            data: 'https://andrewalevin.github.io/zvenigorod-map/cozyspots/routes/polushkino.gpx',
+            outline: true
+        });
+    });
+
+</script>
+</body>
+</html>
