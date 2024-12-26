@@ -12,45 +12,6 @@ function radiusLine(zoom) {
 }
 
 
-function mapAddLayer(_map, _id, coordinates, color = 'red', width = 4) {
-    _map.addLayer({
-        id: _id,
-        type: 'line',
-        source: {
-            type: 'geojson',
-            lineMetrics: true,
-            data: {
-                'type': 'FeatureCollection',
-                'features': [{
-                    'type': 'Feature',
-                    'properties': {},
-                    'geometry': {
-                        'coordinates': coordinates,
-                        'type': 'LineString'
-                    }
-                }]
-            }
-        },
-        paint: {
-            'line-color': color,
-            'line-width': width,
-        },
-        layout: {
-            'line-cap': 'round',
-            'line-join': 'round'
-        }
-    });
-
-    _map.on('click', _id, function(e) {
-        new mapboxgl.Popup({
-            offset: 10
-        })
-            .setLngLat(e.lngLat)
-            .setHTML(`<h3>${Math.trunc(turf.lineDistance(turf.lineString(coordinates)))} km</h3>`)
-            .addTo(map);
-    });
-}
-
 function getRadius(zoom) {
     const radius = Math.max(9 * (zoom - 9), 10);
     return Math.round(radius);
@@ -172,7 +133,10 @@ function spotPlaceDataOnMap(data) {
 
         new mapboxgl.Marker(markerElem)
             .setLngLat(adjustedCoordinates)
-            .setPopup(new mapboxgl.Popup({ offset: 50 }).setHTML(markerPopupElem.outerHTML))
+            .setPopup(new mapboxgl.Popup({
+                offset: 50,
+                className: 'popup-spot',
+            }).setHTML(markerPopupElem.outerHTML))
             .addTo(map);
     });
 }
@@ -277,7 +241,7 @@ async function fetchRoute(route) {
         // Возвращаем объект с данными
         return {
             path: route.path,
-            title: route.title || 'No Title',
+            title: route.title || '',
             color: route.color,
             points: points
         };
@@ -288,6 +252,14 @@ async function fetchRoute(route) {
     }
 }
 
+
+const routeClickBoxTemplate = `
+  <div class="card">
+    <h3>{{title}}</h3>
+    <h4>{{distance}} km</h4>
+    <p><a href="{{link_gpx_href}}" target="_blank">Download GPX</p>
+  </div>
+`;
 
 function routesAllPlace(data){
     console.log('🐠 routesAllPlace:');
@@ -306,7 +278,36 @@ function routesAllPlace(data){
         console.log('🍔 Add Layer: ', )
         console.log(route);
         console.log(coords);
-        const width = 4;
+        const width = 3;
+
+        map.addLayer({
+            id: `${route.path}-clickable-padding`,
+            type: 'line',
+            source: {
+                type: 'geojson',
+                lineMetrics: true,
+                data: {
+                    'type': 'FeatureCollection',
+                    'features': [{
+                        'type': 'Feature',
+                        'properties': {},
+                        'geometry': {
+                            'coordinates': coords,
+                            'type': 'LineString'
+                        }
+                    }]
+                }
+            },
+            paint: {
+                'line-color': 'rgba(0, 0, 0, 0)', // Fully transparent
+                'line-width': width + 10 // Adjust for padding (e.g., 10px extra)
+            },
+            layout: {
+                'line-cap': 'round',
+                'line-join': 'round'
+            }
+        });
+
         map.addLayer({
             id: route.path,
             type: 'line',
@@ -327,7 +328,36 @@ function routesAllPlace(data){
             },
             paint: {'line-color': route.color, 'line-width': width},
             layout: {'line-cap': 'round', 'line-join': 'round'}
-        })
+        });
+
+
+        map.on('click', `${route.path}-clickable-padding`, function(e) {
+
+            const clickedElement = e.originalEvent.target;
+
+            // Проверяем, если клик был на маркере, ничего не делаем
+            if (clickedElement.closest('.mapboxgl-marker')) {
+                return;
+            }
+
+
+            const distance = Math.trunc(turf.lineDistance(turf.lineString(coords)));
+
+            let html_text = routeClickBoxTemplate
+                .replace('{{title}}', route.title)
+                .replace('{{distance}}', distance)
+                .replace('{{link_gpx_href}}', route.path)
+                .replace('{{link_gpx_title}}', route.path)
+
+            new mapboxgl.Popup({
+                offset: 10,
+                className: 'popup-route'
+            })
+                .setLngLat(e.lngLat)
+                .setHTML(html_text)
+                .addTo(map);
+        });
+
     });
 
 }

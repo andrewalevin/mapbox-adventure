@@ -91,6 +91,18 @@ body {
     object-fit: cover;
 }
 
+
+
+.popup-route{
+
+}
+
+.popup-spot{
+
+}
+
+
+
 /* Стиль для баннера */
 .error-banner {
     position: fixed;
