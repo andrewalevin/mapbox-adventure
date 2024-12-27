@@ -106,8 +106,8 @@ function spotPlaceDataOnMap(data) {
 
             } else {
                 const [name, ext] = img.split('.');
-                const imgSmallPath = `${config.spotPicsDirPath}/${name}-100px.${ext}`;
-                const imgBigPath = `${config.spotPicsDirPath}/${name}-220px.${ext}`;
+                const imgSmallPath = `${config.imagesRoot}/${name}-100px.${ext}`;
+                const imgBigPath = `${config.imagesRoot}/${name}-220px.${ext}`;
 
                 markerElem.style.backgroundImage = `url('${imgSmallPath}\')`;
 
@@ -147,11 +147,12 @@ function mapSetup() {
     const defaultConfig = {
         mapboxToken: '',
         mapStyle: 'mapbox://styles/mapbox/outdoors-v12',
-        mapZoom: 12,
-        mapCenter: [55.751746, 37.618117],
-        spotDataYamlPath: 'data.yaml',
+        mapZoom: 8,
+        mapCenter: [55.675887, 12.585792],
+        spotDataYamlPath: 'spots.yaml',
         spotOffsetForSpotNoCoords: 0.0025,
-        spotPicsDirPath: 'imgs',
+        imagesRoot: 'images',
+        routesRoot: 'routes',
     };
 
     // Merge default and user-provided configuration
@@ -184,6 +185,7 @@ function mapSetup() {
     }
 }
 
+
 function mapEventHandler(eventType, callbacks) {
     if (!Array.isArray(callbacks) || typeof map.on !== 'function') {
         throw new Error("Invalid input: Ensure 'callbacks' is an array and 'map' is a valid Mapbox instance.");
@@ -203,12 +205,11 @@ function mapEventHandler(eventType, callbacks) {
 
 //  🚀 RUN SETUP
 
-
 async function fetchRoute(route) {
+    console.log('🎃 fetchRoute: ', route);
+
     try {
-        let  url = new URL(window.location.href);
-        url = `${url.origin}${url.pathname.substring(0, url.pathname.lastIndexOf('/'))}`;
-        url = url + '/' + route.path;
+        const url = config.routesRoot + '/' + route.path;
         console.log('url: ', url);
 
         const response = await fetch(url);
@@ -261,124 +262,123 @@ const routeClickBoxTemplate = `
   </div>
 `;
 
+
+function routePlaceOnMap(route){
+    console.log('🎸 routePlaceOnMap:');
+
+    const coords = route.points.map(point => [parseFloat(point.lon), parseFloat(point.lat)]);
+    const width = 3;
+
+    map.addLayer({
+        id: `${route.path}-clickable-padding`,
+        type: 'line',
+        source: {
+            type: 'geojson',
+            lineMetrics: true,
+            data: {
+                'type': 'FeatureCollection',
+                'features': [{
+                    'type': 'Feature',
+                    'properties': {},
+                    'geometry': {
+                        'coordinates': coords,
+                        'type': 'LineString'
+                    }
+                }]
+            }
+        },
+        paint: {
+            'line-color': 'rgba(0, 0, 0, 0)', // Fully transparent
+            'line-width': width + 10 // Adjust for padding (e.g., 10px extra)
+        },
+        layout: {
+            'line-cap': 'round',
+            'line-join': 'round'
+        }
+    });
+
+    map.addLayer({
+        id: route.path,
+        type: 'line',
+        source: {
+            type: 'geojson',
+            lineMetrics: true,
+            data: {
+                'type': 'FeatureCollection',
+                'features': [{
+                    'type': 'Feature',
+                    'properties': {},
+                    'geometry': {
+                        'coordinates': coords,
+                        'type': 'LineString'
+                    }
+                }]
+            }
+        },
+        paint: {'line-color': route.color, 'line-width': width},
+        layout: {'line-cap': 'round', 'line-join': 'round'}
+    });
+
+
+    map.on('click', `${route.path}-clickable-padding`, function(e) {
+        const clickedElement = e.originalEvent.target;
+
+        // Проверяем, если клик был на маркере, ничего не делаем
+        if (clickedElement.closest('.mapboxgl-marker')) {
+            return;
+        }
+
+        const distance = Math.trunc(turf.lineDistance(turf.lineString(coords)));
+
+        let html_text = routeClickBoxTemplate
+            .replace('{{title}}', route.title)
+            .replace('{{distance}}', distance)
+            .replace('{{link_gpx_href}}', route.path)
+            .replace('{{link_gpx_title}}', route.path)
+
+        new mapboxgl.Popup({
+            offset: 10,
+            className: 'popup-route'
+        })
+            .setLngLat(e.lngLat)
+            .setHTML(html_text)
+            .addTo(map);
+    });
+}
+
 function routesAllPlace(data){
-    console.log('🐠 routesAllPlace:');
-
-    let show = {
-        'lat': 13232,
-        'lon': 54.2
-    }
-
-    console.log('SHOW', show);
+    console.log('😈 routesAllPlace:');
 
     data.forEach(function(route, index) {
-        const coords = route.points.map(point => [parseFloat(point.lon), parseFloat(point.lat)]);
-
-
-        console.log('🍔 Add Layer: ', )
-        console.log(route);
-        console.log(coords);
-        const width = 3;
-
-        map.addLayer({
-            id: `${route.path}-clickable-padding`,
-            type: 'line',
-            source: {
-                type: 'geojson',
-                lineMetrics: true,
-                data: {
-                    'type': 'FeatureCollection',
-                    'features': [{
-                        'type': 'Feature',
-                        'properties': {},
-                        'geometry': {
-                            'coordinates': coords,
-                            'type': 'LineString'
-                        }
-                    }]
-                }
-            },
-            paint: {
-                'line-color': 'rgba(0, 0, 0, 0)', // Fully transparent
-                'line-width': width + 10 // Adjust for padding (e.g., 10px extra)
-            },
-            layout: {
-                'line-cap': 'round',
-                'line-join': 'round'
-            }
-        });
-
-        map.addLayer({
-            id: route.path,
-            type: 'line',
-            source: {
-                type: 'geojson',
-                lineMetrics: true,
-                data: {
-                    'type': 'FeatureCollection',
-                    'features': [{
-                        'type': 'Feature',
-                        'properties': {},
-                        'geometry': {
-                            'coordinates': coords,
-                            'type': 'LineString'
-                        }
-                    }]
-                }
-            },
-            paint: {'line-color': route.color, 'line-width': width},
-            layout: {'line-cap': 'round', 'line-join': 'round'}
-        });
-
-
-        map.on('click', `${route.path}-clickable-padding`, function(e) {
-
-            const clickedElement = e.originalEvent.target;
-
-            // Проверяем, если клик был на маркере, ничего не делаем
-            if (clickedElement.closest('.mapboxgl-marker')) {
-                return;
-            }
-
-
-            const distance = Math.trunc(turf.lineDistance(turf.lineString(coords)));
-
-            let html_text = routeClickBoxTemplate
-                .replace('{{title}}', route.title)
-                .replace('{{distance}}', distance)
-                .replace('{{link_gpx_href}}', route.path)
-                .replace('{{link_gpx_title}}', route.path)
-
-            new mapboxgl.Popup({
-                offset: 10,
-                className: 'popup-route'
-            })
-                .setLngLat(e.lngLat)
-                .setHTML(html_text)
-                .addTo(map);
-        });
-
+        routePlaceOnMap(route)
     });
 
 }
 
+
 function routesPlaceMap() {
-    console.log('🐠 routesPlaceMap');
+    console.log('🐠👺  routesPlaceMap');
 
     const routePromises = config.routes.map(route => {
         console.log('Fetching route from path:', route.path);
         return fetchRoute(route);
     });
 
-    Promise.all(routePromises)
+    Promise.allSettled(routePromises)
         .then(results => {
-            routesAllPlace(results);  // All fetches complete
+            const successfulResults = results
+                .filter(result => result.status === 'fulfilled' && result.value !== null)
+                .map(result => result.value);
+
+            return routesAllPlace(successfulResults);
+        })
+        .then(() => {
+            console.log('✅ All route processing completed.');
         })
         .catch(error => {
             console.error(`Ошибка при обработке маршрутов: ${error.message}`);
         });
 }
-
 
 
 function spotsPlaceMap(){
@@ -399,8 +399,6 @@ function spotsPlaceMap(){
     }
 
 }
-
-
 
 
 mapSetup();

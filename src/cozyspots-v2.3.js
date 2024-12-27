@@ -261,6 +261,7 @@ const routeClickBoxTemplate = `
   </div>
 `;
 
+
 function routesAllPlace(data){
     console.log('🐠 routesAllPlace:');
 
