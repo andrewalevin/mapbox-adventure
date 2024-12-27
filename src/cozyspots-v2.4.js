@@ -353,6 +353,7 @@ function routesAllPlace(data){
         routePlaceOnMap(route)
     });
 
+
 }
 
 
