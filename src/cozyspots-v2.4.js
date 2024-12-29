@@ -2,18 +2,20 @@
 
 function radiusLine(zoom) {
     console.log('Zoom: ', zoom);
-    if (zoom > 11)
+    if (zoom > 11){
+        return 7;
+    } else if (zoom > 10){
         return 6;
-    else if (zoom > 10){
+    } else if (zoom > 7){
         return 5;
-    } else {
-        return 1;
+    }else {
+        return 8;
     }
 }
 
-
 function getRadius(zoom) {
-    const radius = Math.max(9 * (zoom - 9), 10);
+    const radius = Math.max(9 * (zoom - 9), 14);
+    console.log('radius: ', radius);
     return Math.round(radius);
 }
 
