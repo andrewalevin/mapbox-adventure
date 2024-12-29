@@ -53,7 +53,7 @@ function adjustMarkerPosition(marker, index, nearbyMarkers, offsetMultiplier = 0
 
 function spotUpdateMarkerSize() {
     const radius = getRadius(map.getZoom());
-    for (const markerElem of  document.getElementsByClassName("marker")) {
+    for (const markerElem of  document.getElementsByClassName("marker-cozy-spot")) {
         markerElem.style.width = `${radius}px`;
         markerElem.style.height = `${radius}px`;
     }
@@ -80,7 +80,7 @@ function spotPlaceDataOnMap(data) {
         const adjustedCoordinates = adjustMarkerPosition(originalCoordinates, index, nearbyMarkers);
 
         const markerElem = Object.assign(document.createElement('div'), {
-            className: `marker marker-interest ${kind.trim()}`.trim(),
+            className: `marker marker-interest marker-cozy-spot ${kind.trim()}`.trim(),
             style: `width: ${radius}px; height: ${radius}px;`});
 
         const markerPopupElem = Object.assign(document.createElement('div'), {
@@ -352,8 +352,6 @@ function routesAllPlace(data){
     data.forEach(function(route, index) {
         routePlaceOnMap(route)
     });
-
-
 }
 
 
@@ -412,11 +410,11 @@ spotsPlaceMap();
 
 
 
-/*
+
 mapEventHandler('zoom', [
     () => spotUpdateMarkerSize()
 ]);
-*/
+
 
 
 
