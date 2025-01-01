@@ -3,11 +3,11 @@
 function radiusLine(zoom) {
     console.log('Zoom: ', zoom);
     if (zoom > 11){
-        return 7;
+        return 8;
     } else if (zoom > 10){
-        return 6;
+        return 8;
     } else if (zoom > 7){
-        return 5;
+        return 8;
     }else {
         return 8;
     }
