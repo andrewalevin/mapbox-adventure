@@ -1,7 +1,7 @@
 
 
 function radiusLine(zoom) {
-    console.log('Zoom: ', zoom);
+    console.log('🔍 zoom: ', zoom);
     if (zoom > 12) return 12;
     if (zoom > 11) return 11;
     if (zoom > 10) return 10;
