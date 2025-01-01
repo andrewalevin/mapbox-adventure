@@ -13,9 +13,8 @@ function radiusLine(zoom) {
     return 14;
 }
 
-
 function getRadius(zoom) {
-    const radius = Math.max(9 * (zoom - 9), 12);
+    const radius = Math.max(5 * (zoom - 9) + 5, 12);
     console.log('radius: ', radius);
     return Math.round(radius + 2);
 }
