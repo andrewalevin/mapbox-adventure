@@ -15,7 +15,7 @@ function radiusLine(zoom) {
 
 function getRadius(zoom) {
     const radius = Math.max(5 * (zoom - 9) + 5, 12);
-    console.log('radius: ', radius);
+    console.log('zoom:', zoom, 'radius: ', radius);
     return Math.round(radius + 2);
 }
 
