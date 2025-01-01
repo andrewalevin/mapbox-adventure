@@ -2,16 +2,17 @@
 
 function radiusLine(zoom) {
     console.log('Zoom: ', zoom);
-    if (zoom > 11){
-        return 8;
-    } else if (zoom > 10){
-        return 8;
-    } else if (zoom > 7){
-        return 8;
-    }else {
-        return 8;
-    }
+    if (zoom > 12) return 12;
+    if (zoom > 11) return 11;
+    if (zoom > 10) return 10;
+    if (zoom > 9) return 9;
+    if (zoom > 8) return 8;
+    if (zoom > 7) return 7;
+    if (zoom > 6) return 6;
+    if (zoom > 5) return 5;
+    return 14;
 }
+
 
 function getRadius(zoom) {
     const radius = Math.max(9 * (zoom - 9), 12);
