@@ -108,8 +108,8 @@ function spotPlaceDataOnMap(data) {
 
             } else {
                 const [name, ext] = img.split('.');
-                const imgSmallPath = `${config.imagesRoot}/${name}-100px.${ext}`;
-                const imgBigPath = `${config.imagesRoot}/${name}-220px.${ext}`;
+                const imgSmallPath = `${config.imagesRoot}/${name}-120px.${ext}`;
+                const imgBigPath = `${config.imagesRoot}/${name}-420px.${ext}`;
 
                 markerElem.style.backgroundImage = `url('${imgSmallPath}\')`;
 
