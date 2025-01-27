@@ -143,7 +143,7 @@ function mapAddLayer(_map, _id, coordinates, color = 'red', width = 4) {
             offset: 10
         })
             .setLngLat(e.lngLat)
-            .setHTML(`<h3>${color}</h3>`)
+            .setHTML(`<h3>${_id}</h3>`)
             .addTo(map);
     });
 }

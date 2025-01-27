@@ -292,8 +292,7 @@
       console.log(color);
       coords = addToLatitude(coords, -0.1);
       console.log(color.name);
-      mapAddLayer(map, color.name, coords, color.name);
-
+      mapAddLayer(map, color.name + ' - ' + color.hex, coords, color.hex);
     }
 
   });
