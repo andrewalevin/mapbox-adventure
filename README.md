@@ -145,3 +145,10 @@ let config = {
         mapboxToken: '****TOKEN****',
     }
 ```
+
+
+#### Color Palette
+
+![images/colorpalette.jpg](images/colorpalette.jpg)
+
+https://andrewalevin.github.io/mapbox-adventure/colorpalette/
