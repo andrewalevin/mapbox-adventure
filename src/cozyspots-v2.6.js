@@ -267,9 +267,10 @@ const routeClickBoxTemplate = `
 
 function routePlaceOnMap(route){
     console.log('🎸 routePlaceOnMap:');
+    console.log(route);
 
     const coords = route.points.map(point => [parseFloat(point.lon), parseFloat(point.lat)]);
-    const width = route?.width ?? 3;
+    const width = route.width ?? 3;
 
     console.log('🍊 WIDTH: ' + width);
 
