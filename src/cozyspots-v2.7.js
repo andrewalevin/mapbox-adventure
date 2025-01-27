@@ -71,12 +71,77 @@ function spotFindNearbyMarkers(marker, allMarkers, threshold = 0.01) {
 }
 
 
+function appendLinksToPopup(markerPopupElem, links) {
+    if (!links || !markerPopupElem) return;
+
+    const createLinkElement = (link) => {
+        if (isHTML(link)) {
+            return link;
+        }
+        return `<a href="${link}" target="_blank" rel="noopener noreferrer">${link}</a>`;
+    };
+
+    const generateInnerHTML = () => {
+        if (typeof links === "string") {
+            return createLinkElement(links);
+        }
+
+        if (Array.isArray(links)) {
+            return links.map(createLinkElement).join('<br>'); // Separate links with line breaks
+        }
+
+        return '';
+    };
+
+    const innerHTML = generateInnerHTML();
+    if (innerHTML) {
+        const linkContainer = document.createElement('div');
+        linkContainer.className = 'popup-link';
+        linkContainer.innerHTML = innerHTML;
+        markerPopupElem.appendChild(linkContainer);
+    }
+}
+
+
+function appendAboutToPopup(markerPopupElem, about) {
+    if (!about || !markerPopupElem) return;
+
+    const createAboutElement = (content) => {
+        const container = document.createElement('div');
+        container.className = 'popup-about';
+        container.innerHTML = isHTML(content) ? content : `<p>${content}</p>`;
+        return container;
+    };
+
+    markerPopupElem.appendChild(createAboutElement(about));
+}
+
+function appendTitleToPopup(markerPopupElem, title) {
+    if (!title || !markerPopupElem) return;
+
+    const createTitleElement = (content) => {
+        const container = document.createElement('div');
+        container.className = 'popup-title';
+        container.innerHTML = isHTML(content) ? content : `<h3>${content}</h3>`;
+        return container;
+    };
+
+    markerPopupElem.appendChild(createTitleElement(title));
+}
+
+function addClassesToPopup(markerPopupElem, kind) {
+    if (!kind?.trim() || !markerPopupElem) return;
+
+    const classes = kind.split(' ').filter(Boolean); // Remove any empty strings
+    markerPopupElem.classList.add(...classes);
+}
+
 function spotPlaceDataOnMap(data) {
     const radius = getRadius(map.getZoom());
     const allCoordinates = data.map(item => parseCoordinates(item.coords, config.mapCenter, config.spotOffsetForSpotNoCoords));
 
     data.forEach((dataItem, index) => {
-        const { coords = '', title = '', about = '', img = '', link = '', kind = '' } = dataItem;
+        const { coords = '', title = '', about = '', img = '', links = '', kind = '' } = dataItem;
         const originalCoordinates = parseCoordinates(coords, config.mapCenter, config.spotOffsetForSpotNoCoords);
         const nearbyMarkers = spotFindNearbyMarkers(originalCoordinates, allCoordinates);
         const adjustedCoordinates = adjustMarkerPosition(originalCoordinates, index, nearbyMarkers);
@@ -88,14 +153,9 @@ function spotPlaceDataOnMap(data) {
         const markerPopupElem = Object.assign(document.createElement('div'), {
             className: 'popup'});
 
-        if (title)
-            markerPopupElem.appendChild(
-                Object.assign(document.createElement('div'), {
-                    className: 'popup-title',
-                    innerHTML: isHTML(title) ? title : `<h3>${title}</h3>`}));
+        appendTitleToPopup(markerPopupElem, title);
 
-        if (kind.trim())
-            markerPopupElem.classList.add(...kind.split(' '));
+        addClassesToPopup(markerPopupElem, kind);
 
         if (img) {
             if (isHTML(img)) {
@@ -120,41 +180,9 @@ function spotPlaceDataOnMap(data) {
             }
         }
 
-        if (about)
-            markerPopupElem.appendChild(
-                Object.assign(document.createElement('div'), {
-                    className: 'popup-about',
-                    innerHTML: isHTML(about) ? about : `<p>${about}</p>`}));
+        appendAboutToPopup(markerPopupElem, about);
 
-        if (links){
-            console.log('🐸 Link: ' + links)
-            let innerHTML = ''
-
-            if (typeof links === "string") {
-                innerHTML = isHTML(links)
-                    ? links
-                    : `<a href="${links}" target="_blank">${links}</a>`;
-            }
-
-            if (Array.isArray(links)) {
-                innerHTML = links
-                    .map(link =>
-                        isHTML(link)
-                            ? link
-                            : `<a href="${link}" target="_blank">${link}</a>`
-                    )
-                    .join('<br>'); // Separate links with a line break
-            }
-
-            if (innerHTML)
-                markerPopupElem.appendChild(
-                    Object.assign(document.createElement('div'), {
-                        className: 'popup-link',
-                        innerHTML: innerHTML
-                    }));
-        }
-
-
+        appendLinksToPopup(markerPopupElem, links);
 
         new mapboxgl.Marker(markerElem)
             .setLngLat(adjustedCoordinates)
