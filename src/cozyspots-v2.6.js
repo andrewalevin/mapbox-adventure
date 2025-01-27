@@ -246,6 +246,7 @@ async function fetchRoute(route) {
             path: route.path,
             title: route.title || '',
             color: route.color,
+            width: route.width,
             points: points
         };
 
