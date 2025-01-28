@@ -298,6 +298,7 @@ async function fetchRoute(route) {
             title: route.title || '',
             color: route.color,
             width: route.width,
+            links: route.links,
             points: points
         };
 
@@ -374,6 +375,8 @@ function routePlaceOnMap(route){
     });
 
 
+    console.log('🌍 CLICK');
+
     map.on('click', `${route.path}-clickable-padding`, function(e) {
         const clickedElement = e.originalEvent.target;
 
@@ -384,21 +387,57 @@ function routePlaceOnMap(route){
 
         const distance = Math.trunc(turf.lineDistance(turf.lineString(coords)));
 
-        let html_text = routeClickBoxTemplate
-            .replace('{{title}}', route.title)
-            .replace('{{distance}}', distance)
-            .replace('{{link_gpx_href}}', route.path)
-            .replace('{{link_gpx_title}}', route.path)
+        const card = document.createElement('div');
+        card.className = 'card';
 
-        new mapboxgl.Popup({
-            offset: 10,
-            className: 'popup-route'
-        })
+        card.appendChild(Object.assign(
+            document.createElement('h3'), { textContent: route.title }));
+
+        card.appendChild(Object.assign(
+            document.createElement('h4'), { textContent: `${distance} km` }));
+
+        if (route.links){
+            let linksArray;
+            if (typeof route.links === "string")
+                linksArray.push(route.links);
+
+            if (Array.isArray(route.links))
+                linksArray = route.links;
+
+            console.log('linksArray: ' + linksArray);
+
+
+
+            linksArray.forEach(function(link) {
+                let linkP = document.createElement('p');
+                linkP.innerHTML = `<a href="${link}" target="_blank">${link}</a>`;
+
+                console.log(linkP);  // Access each element directly
+                card.appendChild(linkP);
+            });
+        }
+
+        const link = Object.assign(
+            document.createElement('a'), {
+                href: route.path,
+                target: '_blank',
+                textContent: 'Download GPX'
+            });
+
+        const paragraph = document.createElement('p');
+        paragraph.appendChild(link);
+        card.appendChild(paragraph);
+
+        console.log('🪭 CARD: ');
+        console.log(card.innerHTML);
+
+        new mapboxgl.Popup({offset: 10, className: 'popup-route'})
             .setLngLat(e.lngLat)
-            .setHTML(html_text)
+            .setHTML(card.innerHTML)
             .addTo(map);
     });
 }
+
 
 function routesAllPlace(data){
     console.log('😈 routesAllPlace:');
