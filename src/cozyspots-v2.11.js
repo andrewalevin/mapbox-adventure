@@ -1,4 +1,23 @@
 
+function parseUrlParams(urlOrParams, paramList) {
+    const params = urlOrParams.startsWith('?')
+        ? new URLSearchParams(urlOrParams)
+        : new URL(urlOrParams).searchParams;
+
+    const result = {};
+
+    paramList.forEach(param => {
+        const value = params.get(param);
+        if (value !== null) {
+            result[param] = isNaN(value) ? value : (value.includes('.') ? parseFloat(value) : parseInt(value, 10));
+        }
+    });
+
+    return result;
+}
+
+const urlParams = parseUrlParams(window.location.search, ['lon', 'lat', 'zoom']);
+
 
 function radiusLine(zoom){
     console.log('🔍 zoom: ', zoom);
@@ -195,7 +214,7 @@ function spotPlaceDataOnMap(data) {
 }
 
 
-function mapSetup() {
+function mapSetup(lat, lon, zoom) {
     // Default configuration
     const defaultConfig = {
         mapboxToken: '',
@@ -208,9 +227,14 @@ function mapSetup() {
         routesRoot: 'routes',
     };
 
+
     // Merge default and user-provided configuration
     const config = { ...defaultConfig, ...window.config };
     window.config = config; // Store the merged configuration globally
+
+    lat = lat || config.mapCenter[0];
+    lon = lon || config.mapCenter[1];
+    zoom = zoom || config.mapZoom;
 
     console.log('🛠🐝 CONFIG: ', config);
 
@@ -226,8 +250,8 @@ function mapSetup() {
         // Initialize and store the map instance
         window.map = new mapboxgl.Map({
             container: 'map',
-            center: [...config.mapCenter].reverse(), // Reverse without mutating the original array
-            zoom: config.mapZoom,
+            center: [lon, lat], // Reverse without mutating the original array
+            zoom: zoom,
             style: config.mapStyle,
         });
     } catch (error) {
@@ -506,7 +530,7 @@ function spotsPlaceMap(){
 }
 
 
-mapSetup();
+mapSetup(urlParams.lat, urlParams.lon, urlParams.zoom);
 
 if (config.routes)
     routesPlaceMap();
