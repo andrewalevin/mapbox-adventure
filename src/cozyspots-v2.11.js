@@ -354,11 +354,6 @@ function routePlaceOnMap(route){
 
     const lineString = turf.lineString(coords);
     const center = turf.center(lineString).geometry.coordinates;
-    const centerStr = '?lat=' + center[1].toFixed(6) + '&lon=' + center[0].toFixed(6) + '&zoom=10'
-    console.log('🔹 center: ');
-    console.log(centerStr);
-
-    new mapboxgl.Marker({ color: 'red' }).setLngLat(center).addTo(map);
 
     map.addLayer({
         id: `${route.path}-clickable-padding`,
@@ -432,9 +427,9 @@ function routePlaceOnMap(route){
         card.appendChild(Object.assign(
             document.createElement('h4'), { textContent: `${distance} km` }));
 
+        const centerStr = '?lat=' + center[1].toFixed(6) + '&lon=' + center[0].toFixed(6) + '&zoom=8'
         card.appendChild(Object.assign(
             document.createElement('p'), { textContent: `${centerStr}` }));
-
 
         if (route.links){
             let linksArray;
