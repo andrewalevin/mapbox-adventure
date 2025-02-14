@@ -427,7 +427,7 @@ function routePlaceOnMap(route){
         card.appendChild(Object.assign(
             document.createElement('h4'), { textContent: `${distance} km` }));
 
-        const centerStr = '?lat=' + center[1].toFixed(6) + '&lon=' + center[0].toFixed(6) + '&zoom=8'
+        const centerStr = 'lat=' + center[1].toFixed(6) + '&lon=' + center[0].toFixed(6) + '&zoom=8'
         card.appendChild(Object.assign(
             document.createElement('p'), { textContent: `${centerStr}` }));
 
