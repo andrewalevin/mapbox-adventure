@@ -1,8 +1,9 @@
 
 function parseUrlParams(urlOrParams, paramList) {
-    const params = urlOrParams.startsWith('?')
-        ? new URLSearchParams(urlOrParams)
-        : new URL(urlOrParams).searchParams;
+    if (!urlOrParams.startsWith('?'))
+        return {}
+
+    const params = new URLSearchParams(urlOrParams);
 
     const result = {};
 
