@@ -345,7 +345,8 @@ const routeClickBoxTemplate = `
 
 
 function routePlaceOnMap(route){
-    console.log('🎸 routePlaceOnMap:');
+    console.log('📌 routePlaceOnMap:');
+    console.log(route.title);
 
     const coords = route.points.map(point => [parseFloat(point.lon), parseFloat(point.lat)]);
     const width = route.width ?? 3;
