@@ -32,6 +32,7 @@ function radiusLine(zoom){
     return 14;
 }
 
+
 function getRadius(zoom) {
     const radius = Math.max(3 * (zoom - 6) + 15, 15);
     console.log('🔍 1 - zoom:', zoom, 'radius: ', radius);
@@ -79,6 +80,7 @@ function spotUpdateMarkerSize() {
         markerElem.style.height = `${radius}px`;
     }
 }
+
 
 function spotFindNearbyMarkers(marker, allMarkers, threshold = 0.01) {
     return allMarkers.filter(otherMarker => {
@@ -348,6 +350,13 @@ function routePlaceOnMap(route){
     const coords = route.points.map(point => [parseFloat(point.lon), parseFloat(point.lat)]);
     const width = route.width ?? 3;
 
+    const lineString = turf.lineString(coords);
+    const center = turf.center(lineString).geometry.coordinates;
+    console.log('🔹 center: ');
+    console.log(center);
+
+    new mapboxgl.Marker({ color: 'red' }).setLngLat(center).addTo(map);
+
     map.addLayer({
         id: `${route.path}-clickable-padding`,
         type: 'line',
@@ -409,7 +418,7 @@ function routePlaceOnMap(route){
             return;
         }
 
-        const distance = Math.trunc(turf.lineDistance(turf.lineString(coords)));
+        const distance = Math.trunc(turf.lineDistance(lineString));
 
         const card = document.createElement('div');
         card.className = 'card';
