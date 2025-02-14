@@ -353,7 +353,7 @@ function routePlaceOnMap(route){
 
     const lineString = turf.lineString(coords);
     const center = turf.center(lineString).geometry.coordinates;
-    const centerStr = '?lat=' + center[1] + '&lon=' + center[0] + '&zoom=10'
+    const centerStr = '?lat=' + center[1].toFixed(6) + '&lon=' + center[0].toFixed(6) + '&zoom=10'
     console.log('🔹 center: ');
     console.log(centerStr);
 
