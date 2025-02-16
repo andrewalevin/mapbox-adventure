@@ -596,7 +596,7 @@ map.on('load', () => {
                 [urlParams.minlon, urlParams.minlat], // Southwest corner
                 [urlParams.maxlon, urlParams.maxlat]  // Northeast corner
             ], {
-                padding: 200,
+                padding: 20,
                 duration: 2000,
                 maxZoom: 15
             });
