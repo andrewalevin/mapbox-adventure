@@ -329,6 +329,7 @@ function routePlaceOnMap(route){
     const lineString = turf.lineString(coords);
     const center = turf.center(lineString).geometry.coordinates;
 
+    /*
     map.addLayer({
         id: `${route.path}-clickable-padding`,
         type: 'line',
@@ -356,32 +357,69 @@ function routePlaceOnMap(route){
             'line-join': 'round'
         }
     });
+     */
+
+    const routeID = 'id-' + route.path;
+    const sourceRouteName = 'source-' + route.path;
+
+    map.addSource(sourceRouteName, {
+        type: 'geojson',
+        lineMetrics: true,
+        data: {
+            'type': 'FeatureCollection',
+            'features': [{
+                'type': 'Feature',
+                'properties': { id: routeID },  // ✅ Add unique ID for feature-state
+                'geometry': {
+                    'coordinates': coords,
+                    'type': 'LineString'
+                }
+            }]
+        }
+    });
 
     map.addLayer({
-        id: route.path,
+        id: routeID,
         type: 'line',
-        source: {
-            type: 'geojson',
-            lineMetrics: true,
-            data: {
-                'type': 'FeatureCollection',
-                'features': [{
-                    'type': 'Feature',
-                    'properties': {},
-                    'geometry': {
-                        'coordinates': coords,
-                        'type': 'LineString'
-                    }
-                }]
-            }
-        },
+        source: sourceRouteName,
         paint: {
             'line-color': route.color,
-            'line-width': width
+            'line-width': ['case', ['boolean', ['feature-state', 'hover'], false], 6, 3]  // ✅ Works dynamically
         },
         layout: {'line-cap': 'round', 'line-join': 'round'}
     });
 
+    /*
+    let hoveredFeatureId = null;
+
+    // Mousemove event to expand line width
+    map.on('mousemove', routeID, (e) => {
+        if (e.features.length > 0) {
+            if (hoveredFeatureId !== null) {
+                map.setFeatureState(
+                    { source: sourceRouteName, id: hoveredFeatureId },
+                    { hover: false }
+                );
+            }
+            hoveredFeatureId = e.features[0].id;
+            map.setFeatureState(
+                { source: sourceRouteName, id: hoveredFeatureId },
+                { hover: true }
+            );
+        }
+    });
+
+    // Mouseleave event to reset line width
+    map.on('mouseleave', routeID, () => {
+        if (hoveredFeatureId !== null) {
+            map.setFeatureState(
+                { source: sourceRouteName, id: hoveredFeatureId },  // ✅ Fixed incorrect source reference
+                { hover: false }
+            );
+        }
+        hoveredFeatureId = null;
+    });
+    */
 
     let queryStrMinMaxLatLon = '';
     if (config.debug){
@@ -390,13 +428,18 @@ function routePlaceOnMap(route){
         const rectangleOutline = turf.polygonToLine(rectangle);
 
 
+        const sourceRectangleID = 'rectangle-id-' + route.path;
+
+        map.addSource(sourceRectangleID, {
+            'type': 'geojson',
+            'data': rectangleOutline
+        });
+
+
         map.addLayer({
             id: `${route.path}-rectangle`,
             type: 'line',
-            source: {
-                type: 'geojson',
-                data: rectangleOutline
-            },
+            source: sourceRectangleID,
             paint: {
                 'line-color': 'yellow',
                 'line-width': 2
@@ -426,10 +469,72 @@ function routePlaceOnMap(route){
         });
     }
 
+    let hoveredPolygonId = null;
+
+
+    // The feature-state dependent fill-opacity expression will render the hover effect
+    // when a feature's hover state is set to true.
+    map.addLayer({
+        'id': 'state-fills',
+        'type': 'fill',
+        'source': sourceRectangleID,
+        'layout': {},
+        'paint': {
+            'fill-color': '#627BC1',
+            'fill-opacity': [
+                'case',
+                ['boolean', ['feature-state', 'hover'], false],
+                1,
+                0.5
+            ]
+        }
+    });
+
+    map.addLayer({
+        'id': 'state-borders',
+        'type': 'line',
+        'source': sourceRectangleID,
+        'layout': {},
+        'paint': {
+            'line-color': '#627BC1',
+            'line-width': 2
+        }
+    });
+
+    // When the user moves their mouse over the state-fill layer, we'll update the
+    // feature state for the feature under the mouse.
+    map.on('mousemove', 'state-fills', (e) => {
+        if (e.features.length > 0) {
+            if (hoveredPolygonId !== null) {
+                map.setFeatureState(
+                    { source: sourceRectangleID, id: hoveredPolygonId },
+                    { hover: false }
+                );
+            }
+            hoveredPolygonId = e.features[0].id;
+            map.setFeatureState(
+                { source: sourceRectangleID, id: hoveredPolygonId },
+                { hover: true }
+            );
+        }
+    });
+
+    // When the mouse leaves the state-fill layer, update the feature state of the
+    // previously hovered feature.
+    map.on('mouseleave', 'state-fills', () => {
+        if (hoveredPolygonId !== null) {
+            map.setFeatureState(
+                { source: 'states', id: hoveredPolygonId },
+                { hover: false }
+            );
+        }
+        hoveredPolygonId = null;
+    });
+
 
     console.log('🌍 CLICK');
 
-    map.on('click', `${route.path}-clickable-padding`, function(e) {
+    map.on('click', routeID, function(e) {
         const clickedElement = e.originalEvent.target;
 
         // Проверяем, если клик был на маркере, ничего не делаем
@@ -604,6 +709,19 @@ map.on('load', () => {
                 maxZoom: 15
             });
         }, 1000);
+
+
+
+
+    /////////////////////
+    ///////////////////
+    /////////////////
+
+
+
+
+
+
 });
 
 
