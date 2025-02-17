@@ -562,8 +562,6 @@ const segmentsList = {
     }
 };
 
-
-
 map.on('load', () => {
     console.log('🥗🥗 urlParams: \n', urlParams);
     console.log("🗺🗺🗺🗺🗺🗺 Map fully loaded!");
@@ -590,24 +588,19 @@ map.on('load', () => {
             [parseFloat(urlParams.maxlon) + lonDelta, parseFloat(urlParams.maxlat) + latDelta]  // Northeast corner
         ];
 
-    if (boundsFit){
-        console.log('boundsFit: ', boundsFit)
+    if (boundsFit)
         setTimeout(() => {
             map.fitBounds(boundsFit, {
-                padding: 100,
+                padding: 20,
                 duration: 2000,
                 maxZoom: 15
             });
         }, 1000);
-    }
 
     if (layerIdSetLineWidth)
         setTimeout(() => {
             map.setPaintProperty(layerIdSetLineWidth, 'line-width', config.lineWidthMax);
         }, 3000);
-
-
-
 });
 
 
