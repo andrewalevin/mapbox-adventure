@@ -567,8 +567,8 @@ map.on('load', () => {
     console.log("🗺🗺🗺🗺🗺🗺 Map fully loaded!");
 
     let boundsFit = [];
-    const lonDelta = 0.01;
-    const latDelta = 0.01;
+    const lonDelta = 0.05;
+    const latDelta = 0.05;
     let layerIdSetLineWidth = '';
 
     if(urlParams?.segment && segmentsList[urlParams.segment]){
