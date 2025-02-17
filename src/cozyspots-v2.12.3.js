@@ -567,8 +567,8 @@ map.on('load', () => {
     console.log("🗺🗺🗺🗺🗺🗺 Map fully loaded!");
 
     let boundsFit = [];
-    const lonDelta = 0.05;
-    const latDelta = 0.05;
+    const lonDelta = 0.02;
+    const latDelta = 0.02;
     let layerIdSetLineWidth = '';
 
     if(urlParams?.segment && segmentsList[urlParams.segment]){
@@ -576,7 +576,7 @@ map.on('load', () => {
 
         boundsFit = [
             [segment.southwest.lon - lonDelta, segment.southwest.lat - latDelta],
-            [segment.northeast.lon - lonDelta, segment.northeast.lat + latDelta],
+            [segment.northeast.lon + lonDelta, segment.northeast.lat + latDelta],
         ]
 
         layerIdSetLineWidth = 'route-' + segment.path;
