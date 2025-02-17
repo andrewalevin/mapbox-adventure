@@ -208,6 +208,8 @@ function mapSetup(urlParams) {
         spotOffsetForSpotNoCoords: 0.0025,
         imagesRoot: 'images',
         routesRoot: 'routes',
+        lineWidth: 3,
+        lineWidthMax: 7
     };
 
 
@@ -323,226 +325,79 @@ function routePlaceOnMap(route){
     console.log('📌 routePlaceOnMap:');
     console.log(route.title);
 
-    const coords = route.points.map(point => [parseFloat(point.lon), parseFloat(point.lat)]);
-    const width = route.width ?? 3;
+    const coordsRoute = route.points.map(point => [parseFloat(point.lon), parseFloat(point.lat)]);
+    const lineWidth = route?.width ?? config.lineWidth;
 
-    const lineString = turf.lineString(coords);
-    const center = turf.center(lineString).geometry.coordinates;
+    const lineStringRoute = turf.lineString(coordsRoute);
 
-    /*
-    map.addLayer({
-        id: `${route.path}-clickable-padding`,
-        type: 'line',
-        source: {
-            type: 'geojson',
-            lineMetrics: true,
-            data: {
-                'type': 'FeatureCollection',
-                'features': [{
-                    'type': 'Feature',
-                    'properties': {},
-                    'geometry': {
-                        'coordinates': coords,
-                        'type': 'LineString'
-                    }
-                }]
-            }
-        },
-        paint: {
-            'line-color': 'rgba(0, 0, 0, 0)', // Fully transparent
-            'line-width': width + 10 // Adjust for padding (e.g., 10px extra)
-        },
-        layout: {
-            'line-cap': 'round',
-            'line-join': 'round'
-        }
-    });
-     */
+    const distanceRoute = Math.trunc(turf.lineDistance(lineStringRoute));
 
-    const routeID = 'id-' + route.path;
-    const sourceRouteName = 'source-' + route.path;
+    const bboxRoute = turf.bbox(lineStringRoute);
 
-    map.addSource(sourceRouteName, {
+    const routeLayerId = 'route-' + route.path;
+    const sourceRouteId = 'source-' + routeLayerId;
+
+    map.addSource(sourceRouteId, {
         type: 'geojson',
         lineMetrics: true,
         data: {
             'type': 'FeatureCollection',
             'features': [{
                 'type': 'Feature',
-                'properties': { id: routeID },  // ✅ Add unique ID for feature-state
-                'geometry': {
-                    'coordinates': coords,
-                    'type': 'LineString'
-                }
+                'geometry': {'coordinates': coordsRoute, 'type': 'LineString'}
             }]
         }
     });
 
     map.addLayer({
-        id: routeID,
+        id: routeLayerId,
         type: 'line',
-        source: sourceRouteName,
+        source: sourceRouteId,
         paint: {
             'line-color': route.color,
-            'line-width': ['case', ['boolean', ['feature-state', 'hover'], false], 6, 3]  // ✅ Works dynamically
+            'line-width': lineWidth
         },
         layout: {'line-cap': 'round', 'line-join': 'round'}
     });
 
-    /*
-    let hoveredFeatureId = null;
-
-    // Mousemove event to expand line width
-    map.on('mousemove', routeID, (e) => {
-        if (e.features.length > 0) {
-            if (hoveredFeatureId !== null) {
-                map.setFeatureState(
-                    { source: sourceRouteName, id: hoveredFeatureId },
-                    { hover: false }
-                );
-            }
-            hoveredFeatureId = e.features[0].id;
-            map.setFeatureState(
-                { source: sourceRouteName, id: hoveredFeatureId },
-                { hover: true }
-            );
-        }
-    });
-
-    // Mouseleave event to reset line width
-    map.on('mouseleave', routeID, () => {
-        if (hoveredFeatureId !== null) {
-            map.setFeatureState(
-                { source: sourceRouteName, id: hoveredFeatureId },  // ✅ Fixed incorrect source reference
-                { hover: false }
-            );
-        }
-        hoveredFeatureId = null;
-    });
-    */
-
-    let queryStrMinMaxLatLon = '';
-    if (config.debug){
-        const bbox = turf.bbox(lineString);
-        const rectangle = turf.bboxPolygon(bbox);
-        const rectangleOutline = turf.polygonToLine(rectangle);
-
-
-        const sourceRectangleID = 'rectangle-id-' + route.path;
-
-        map.addSource(sourceRectangleID, {
-            'type': 'geojson',
-            'data': rectangleOutline
-        });
-
-
-        map.addLayer({
-            id: `${route.path}-rectangle`,
-            type: 'line',
-            source: sourceRectangleID,
-            paint: {
-                'line-color': 'yellow',
-                'line-width': 2
-            }
-        });
-
-        console.log('bbox:', bbox);
-        const markers = [
-            [bbox[0], bbox[1]],
-            [bbox[2], bbox[3]],
-        ]
-
-        queryStrMinMaxLatLon += '?' +
-            'minlat=' + bbox[1] + '&' +
-            'minlon=' + bbox[0] + '&' +
-            'maxlat=' + bbox[3] + '&' +
-            'maxlon=' + bbox[2];
-
-        markers.forEach(coord => {
-            const popup1 = new mapboxgl.Popup({ offset: 25 })
-                .setHTML(`<p>${coord[0]},${coord[1]}</p>`);
-
-            new mapboxgl.Marker({ color: 'red' })
-                .setLngLat([coord[0], coord[1]])
-                .setPopup(popup1)
-                .addTo(map);
-        });
-    }
-
-    let hoveredPolygonId = null;
-
-
-    // The feature-state dependent fill-opacity expression will render the hover effect
-    // when a feature's hover state is set to true.
+    const paddingRouteLayerId = 'padding-route-' + route.path;
+    const paddingWidth = 30;
     map.addLayer({
-        'id': 'state-fills',
-        'type': 'fill',
-        'source': sourceRectangleID,
-        'layout': {},
-        'paint': {
-            'fill-color': '#627BC1',
-            'fill-opacity': [
-                'case',
-                ['boolean', ['feature-state', 'hover'], false],
-                1,
-                0.5
-            ]
+        id: paddingRouteLayerId,
+        type: 'line',
+        source: sourceRouteId,
+        paint: {
+            'line-color': 'rgba(0, 0, 0, 0)', // Fully transparent
+            'line-width': lineWidth + paddingWidth
+        },
+        layout: {
+            'line-cap': 'round',
+            'line-join': 'round'
         }
     });
 
-    map.addLayer({
-        'id': 'state-borders',
-        'type': 'line',
-        'source': sourceRectangleID,
-        'layout': {},
-        'paint': {
-            'line-color': '#627BC1',
-            'line-width': 2
-        }
+    map.on('mousemove', paddingRouteLayerId, () => {
+        map.setPaintProperty(routeLayerId, 'line-width', config.lineWidthMax);
     });
 
-    // When the user moves their mouse over the state-fill layer, we'll update the
-    // feature state for the feature under the mouse.
-    map.on('mousemove', 'state-fills', (e) => {
-        if (e.features.length > 0) {
-            if (hoveredPolygonId !== null) {
-                map.setFeatureState(
-                    { source: sourceRectangleID, id: hoveredPolygonId },
-                    { hover: false }
-                );
-            }
-            hoveredPolygonId = e.features[0].id;
-            map.setFeatureState(
-                { source: sourceRectangleID, id: hoveredPolygonId },
-                { hover: true }
-            );
-        }
-    });
-
-    // When the mouse leaves the state-fill layer, update the feature state of the
-    // previously hovered feature.
-    map.on('mouseleave', 'state-fills', () => {
-        if (hoveredPolygonId !== null) {
-            map.setFeatureState(
-                { source: 'states', id: hoveredPolygonId },
-                { hover: false }
-            );
-        }
-        hoveredPolygonId = null;
+    map.on('mouseleave', paddingRouteLayerId, () => {
+        map.setPaintProperty(routeLayerId, 'line-width', lineWidth);
     });
 
 
-    console.log('🌍 CLICK');
+    let additionalInfo = '';
+    if (config.debug)
+        additionalInfo += '<small>' +
+            'minlat=' + bboxRoute[1] + '&<br>' +
+            'minlon=' + bboxRoute[0] + '&<br>' +
+            'maxlat=' + bboxRoute[3] + '&<br>' +
+            'maxlon=' + bboxRoute[2] + '</small>';
 
-    map.on('click', routeID, function(e) {
-        const clickedElement = e.originalEvent.target;
-
-        // Проверяем, если клик был на маркере, ничего не делаем
-        if (clickedElement.closest('.mapboxgl-marker')) {
+    map.on('click', paddingRouteLayerId, function(e) {
+        if (e.originalEvent.target.closest('.mapboxgl-marker'))
             return;
-        }
 
-        const distance = Math.trunc(turf.lineDistance(lineString));
+        console.log('🌍 CLICK');
 
         const card = document.createElement('div');
         card.className = 'card';
@@ -551,28 +406,14 @@ function routePlaceOnMap(route){
             document.createElement('h3'), { textContent: route.title }));
 
         card.appendChild(Object.assign(
-            document.createElement('h4'), { textContent: `${distance} km` }));
+            document.createElement('h4'), { textContent: `${distanceRoute} km` }));
 
-        const centerStr = 'lat=' + center[1].toFixed(6) + '&lon=' + center[0].toFixed(6) + '&zoom=8'
-        card.appendChild(Object.assign(
-            document.createElement('p'), { textContent: `${queryStrMinMaxLatLon}` }));
+        if (route.links) {
+            const linksArray = [].concat(route.links);
 
-        if (route.links){
-            let linksArray;
-            if (typeof route.links === "string")
-                linksArray.push(route.links);
-
-            if (Array.isArray(route.links))
-                linksArray = route.links;
-
-            console.log('linksArray: ' + linksArray);
-
-
-            linksArray.forEach(function(link) {
-                let linkP = document.createElement('p');
+            linksArray.forEach(link => {
+                const linkP = document.createElement('p');
                 linkP.innerHTML = `<a href="${link}" target="_blank">${link}</a>`;
-
-                console.log(linkP);  // Access each element directly
                 card.appendChild(linkP);
             });
         }
@@ -588,8 +429,10 @@ function routePlaceOnMap(route){
         paragraph.appendChild(link);
         card.appendChild(paragraph);
 
-        console.log('🪭 CARD: ');
-        console.log(card.innerHTML);
+        if (additionalInfo)
+            card.appendChild(Object.assign(
+                document.createElement('p'), { innerHTML: additionalInfo }));
+
 
         new mapboxgl.Popup({offset: 10, className: 'popup-route'})
             .setLngLat(e.lngLat)
@@ -599,7 +442,7 @@ function routePlaceOnMap(route){
 }
 
 
-function routesPlaceMap() {
+function routesAllPlaceMap() {
     console.log('🐠👺 routesPlaceMap');
 
     config.routes.forEach(route => {
@@ -648,7 +491,7 @@ function spotsPlaceMap2() {
         });
 }
 
-function spotsPlaceMap(){
+function spotsAllPlaceMap(){
     console.log('🦋 spotsPlaceMap() config.spotDataYamlPath: ', config.spotDataYamlPath);
 
     try {
@@ -684,46 +527,88 @@ function parseUrlParams(urlOrParams, paramList) {
 }
 
 
-const urlParamsNames = ['lon', 'lat', 'zoom', 'minlat', 'minlon', 'maxlat', 'maxlon' ]
+const urlParamsNames = ['lon', 'lat', 'zoom', 'minlat', 'minlon', 'maxlat', 'maxlon', 'segment']
 const urlParams = parseUrlParams(window.location.search, urlParamsNames);
 console.log('🥗 urlParams: \n', urlParams);
 
 mapSetup(urlParams);
 
 if (config.routes)
-    routesPlaceMap();
+    routesAllPlaceMap();
 
-spotsPlaceMap();
+spotsAllPlaceMap();
+
+const segmentsList = {
+    'z0': {
+        'path': 'mars.gpx',
+        'southwest': {
+            'lat': 55.58488,
+            'lon': 36.41636
+        },
+        'northeast': {
+            'lat': 55.62753,
+            'lon': 36.58957
+        }
+    },
+    'z1': {
+        'southwest': {
+            'lat': 55.71145,
+            'lon': 36.79049
+        },
+        'northeast': {
+            'lat': 55.73516,
+            'lon': 36.85897
+        }
+    }
+};
+
+
 
 map.on('load', () => {
-    console.log("Map fully loaded!");
+    console.log('🥗🥗 urlParams: \n', urlParams);
+    console.log("🗺🗺🗺🗺🗺🗺 Map fully loaded!");
+
+    let boundsFit = [];
+    const lonDelta = 0.01;
+    const latDelta = 0.01;
+    let layerIdSetLineWidth = '';
+
+    if(urlParams?.segment && segmentsList[urlParams.segment]){
+        const segment = segmentsList[urlParams.segment];
+
+        boundsFit = [
+            [segment.southwest.lon - lonDelta, segment.southwest.lat - latDelta],
+            [segment.northeast.lon - lonDelta, segment.northeast.lat + latDelta],
+        ]
+
+        layerIdSetLineWidth = 'route-' + segment.path;
+    }
 
     if(!isNaN(urlParams.minlat) && !isNaN(urlParams.minlon) && !isNaN(urlParams.maxlat) && !isNaN(urlParams.maxlon))
+        boundsFit = [
+            [parseFloat(urlParams.minlon) - lonDelta, parseFloat(urlParams.minlat) - latDelta], // Southwest corner
+            [parseFloat(urlParams.maxlon) + lonDelta, parseFloat(urlParams.maxlat) + latDelta]  // Northeast corner
+        ];
+
+    if (boundsFit){
+        console.log('boundsFit: ', boundsFit)
         setTimeout(() => {
-            map.fitBounds([
-                [urlParams.minlon, urlParams.minlat], // Southwest corner
-                [urlParams.maxlon, urlParams.maxlat]  // Northeast corner
-            ], {
-                padding: 50,
+            map.fitBounds(boundsFit, {
+                padding: 100,
                 duration: 2000,
                 maxZoom: 15
             });
         }, 1000);
+    }
 
-
-
-
-    /////////////////////
-    ///////////////////
-    /////////////////
-
-
-
+    if (layerIdSetLineWidth)
+        setTimeout(() => {
+            map.setPaintProperty(layerIdSetLineWidth, 'line-width', config.lineWidthMax);
+        }, 3000);
 
 
 
 });
-
 
 
 mapEventHandler('zoom', [

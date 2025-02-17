@@ -319,7 +319,7 @@ const routeClickBoxTemplate = `
 `;
 
 
-function routePlaceOnMap(route){
+function routeOnePlaceMap(route){
     console.log('📌 routePlaceOnMap:');
     console.log(route.title);
 
@@ -494,7 +494,7 @@ function routePlaceOnMap(route){
 }
 
 
-function routesPlaceMap() {
+function routesAllPlaceMap() {
     console.log('🐠👺 routesPlaceMap');
 
     config.routes.forEach(route => {
@@ -503,7 +503,7 @@ function routesPlaceMap() {
         fetchRoute(route)
             .then(fetchedRoute => {
                 if (fetchedRoute) {
-                    routePlaceOnMap(fetchedRoute);
+                    routeOnePlaceMap(fetchedRoute);
                 }
             })
             .catch(error => {
@@ -586,7 +586,7 @@ console.log('🥗 urlParams: \n', urlParams);
 mapSetup(urlParams);
 
 if (config.routes)
-    routesPlaceMap();
+    routesAllPlaceMap();
 
 spotsPlaceMap();
 
