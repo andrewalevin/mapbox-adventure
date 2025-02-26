@@ -5,7 +5,7 @@ set -o pipefail  # Ensure failures propagate in pipes
 set -u  # Treat unset variables as an error
 
 # Default values
-PYTHON_SCRIPT="convert-tracks2json.py"
+PYTHON_SCRIPT="https://raw.githubusercontent.com/andrewalevin/mapbox-adventure/main/utils/convert-tracks2json.py"
 REQUIRED_PACKAGES=("pyyaml" "gpxpy")  # Add necessary Python dependencies
 VENV_DIR=".venv"  # Virtual environment directory
 
