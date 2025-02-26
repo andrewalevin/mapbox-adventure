@@ -68,17 +68,17 @@ for package in "${REQUIRED_PACKAGES[@]}"; do
 done
 
 # Fetch Python script if not present (uncomment if needed)
-# if [[ ! -f "$PYTHON_SCRIPT" ]]; then
-#     echo "Fetching Python script..."
-#     curl -O https://yourdomain.com/path/to/convert-tracks2json.py
-# fi
+if [[ ! -f "$PYTHON_SCRIPT" ]]; then
+     echo "Fetching Python script..."
+     curl -O https://yourdomain.com/path/to/convert-tracks2json.py
+fi
 
 # Run the Python script with arguments
 echo "Running the Python script..."
 python3 "$PYTHON_SCRIPT" "$YAML_FILE" $DIR_ARG $VAR_ARG
 
 # Cleanup: remove the Python script if it was fetched (uncomment if needed)
-# rm -f "$PYTHON_SCRIPT"
+rm -f "$PYTHON_SCRIPT"
 
 # Deactivate virtual environment
 deactivate
